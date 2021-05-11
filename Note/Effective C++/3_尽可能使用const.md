@@ -30,6 +30,8 @@ const vector<int>::iterator it; => int* const it;
 #### 目的：  
 * 确保该成员函数可以被const 对象调用，使**操作 const 对象**成为可能  。
 * 使类的接口更容易被理解，知道哪个函数不可以改动对象内容。
+* 当成员函数的const和non-const版本同时存在；const对象只能调用const版本，non-const对象只能调用non-const版本
+* non-const对象可以调用const成员函数和非const成员函数
 
 根据`Effective C++条款3`中说道，const成员函数分为位常量 "bitwise/physical constness" 与逻辑常量 "logical constness" 两方面，**编译器强制执行位常量但在编写程序时应该会用逻辑常量**
 
@@ -59,4 +61,9 @@ char *ptr = &a[0];//调用常量成员函数
 方式：声明成员变量时在前面加上 **mutable** 释放掉成员变量的bitwise constnes约束。
 
 ### const 和 non-const 成员函数中避免重复
-当 const 和 non-const 成员函数有着实质等价的实现时，令 non-const 版本调用 const 版本可避免代码重复。
+当 const 和 non-const 成员函数有着实质等价的实现时，令 non-const 版本调用 const 版本可避免代码重复。反之，const 版本调用 non-const 版本则错误。
+
+|                |  const对象(数据不可改变)  |  非const对象(数据可改变)  |
+|:-----------    |:------------------------:| :---------------------:| 
+|  const成员函数  |         可              |         可               | 
+| 非const成员函数 |         不可              |        可               | 
