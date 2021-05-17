@@ -1,7 +1,9 @@
 ﻿
 
 #include "SortAlg.h"
-
+#include <iterator>
+#include <iostream>
+using namespace std;
 void SortAlg::OrderInsertSort(int data[], int length, int offset)
 {
 	//将data中的0号位置作为哨兵位置
@@ -167,10 +169,10 @@ void SortAlg::AdjustBigHeap(int data[], int length, int index)
 {
 	data[0] = data[index];//哨兵作临时存储
 	int Child = 2 * index;//第一个孩子的下标
-	for (; Child <= length; Child *= 2)
+	for (; Child < length; Child *= 2)
 	{
 		///存在左右孩子的情况
-		if (Child + 1 <= length && data[Child + 1] > data[Child])
+		if (Child + 1 < length && data[Child + 1] > data[Child])
 		{
 			Child++;
 		}
