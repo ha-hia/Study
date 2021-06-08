@@ -5,7 +5,7 @@
 
 自底向上分别为：数据链路层、网络层、传输层、应用层
 
-![image-20210608203050163](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608203050163.png)
+![image-20210608203050163](.\Pic\01.png)
 
 ### 数据链路层
 
@@ -41,7 +41,7 @@
 
 ​	IP协议的补充，用于检测网络连接，严格意义不是网络层协议，因为使用处于同一层的IP协议提供的服务。
 
-![image-20210608203125490](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608203125490.png)
+![image-20210608203125490](.\Pic\02.png)
 
 ​	差错报文：用于回应网络错误，如目标不可到达(类型值为 3)和重定向(类型值为 5)
 
@@ -51,7 +51,7 @@
 
 作用：**只关心通信的起始端和目的端，为两台主机上的应用程序提供端到端的通信。**
 
-![image-20210608103941537](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608103941537.png)
+![image-20210608103941537](.\Pic\03.png)
 
 * 数据链路层封装了物理网络的电气细节
 * 网络层封装了网络连接的细节
@@ -97,11 +97,11 @@
 
 上层协议使用下层协议服务的方式，应用程序数据在发送到物理网络上之前，将沿协议栈从上往下依次传递，每层协议都将在上层数据的基础上加上自己的头部信息。
 
-![image-20210608112301984](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608112301984.png)
+![image-20210608112301984](.\Pic\04.png)
 
 TCP报文段：TCP封装后的数据，TCP为通信双方维持连接在内核中存储相关数据，该数据与TCP头部信息一起构成了TCP报文段，内核中保存用户数据的副本。
 
-![image-20210608112505459](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608112505459.png)
+![image-20210608112505459](.\Pic\05.png)
 
 UDP数据报：UDP封装后的数据，UDP无需为应用层数据保存副本，当发送成功内核缓冲区的数据包就被丢弃，未被成功接收并打算重发这个数据报时，应用程序将重新从用户控件将数据拷到UDP内核缓冲区中。
 
@@ -115,7 +115,7 @@ IP数据报：IP封装后的数据，包括头部信息和数据部分(TCP报文
 
 封装的逆过程，当帧到达目的机器，将沿协议栈自底向上依次传递，各层协议依次处理帧中本层负责的头部受获取所需信息，将最后的帧交给目标应用程序。依靠头部信息中的类型字段实现。
 
-![image-20210608115205142](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608115205142.png)
+![image-20210608115205142](.\Pic\06.png)
 
 ## 4、ARP协议工作原理
 
