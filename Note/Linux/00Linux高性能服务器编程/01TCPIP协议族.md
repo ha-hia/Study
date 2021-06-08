@@ -5,7 +5,7 @@
 
 自底向上分别为：数据链路层、网络层、传输层、应用层
 
-![image-20210608094506141](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608094506141.png)
+![image-20210608203050163](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608203050163.png)
 
 ### 数据链路层
 
@@ -41,7 +41,7 @@
 
 ​	IP协议的补充，用于检测网络连接，严格意义不是网络层协议，因为使用处于同一层的IP协议提供的服务。
 
-![image-20210608103026452](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608103026452.png)
+![image-20210608203125490](C:\Users\liubiao\AppData\Roaming\Typora\typora-user-images\image-20210608203125490.png)
 
 ​	差错报文：用于回应网络错误，如目标不可到达(类型值为 3)和重定向(类型值为 5)
 
