@@ -31,27 +31,19 @@ private:
     HungrySingleton& operator=(const HungrySingleton& );
 
 public:
-    static void DeleteInstance();
-    static HungrySingleton* GetInstance();
-};
-
-HungrySingleton* HungrySingleton::m_instance = new HungrySingleton;
-
-void HungrySingleton::DeleteInstance()
-{
-    if (m_instance != nullptr)
+    static void DeleteInstance();/*
     {
-        delete m_instance;
-        m_instance = nullptr;
-    }
-}
-
-HungrySingleton* HungrySingleton::GetInstance()
-{
-    return m_instance;
-}
-
-
+        if (m_instance != nullptr)
+        {
+            delete m_instance;
+            m_instance = nullptr;
+        }
+    }*/
+    static HungrySingleton* GetInstance();/*
+    {
+        return m_instance;
+    }*/
+};
 
 
  /**
@@ -76,9 +68,22 @@ private:
     
     LazySingleton& operator=(const HungrySingleton& );
 
-public:    
-    static LazySingleton* GetInstance();
+public:  
+    /**
+     * C++11后做的改进
+     * 1.若初始化抛出异常将继续保持未初始化状态
+     * 2.若正在初始化，其它运行初始化语句线程将被阻塞
+     * 3.若正在初始化的线程递归调用初始化语句行为未定义
+     * 确保了静态局部变量实现了线程安全
+    */
+    static LazySingleton* GetInstance();/*
+    {
+        static LazySingleton instance;
+        return &instance;
+    }
+    */
 };
+
 
 /**
  * C++11后做的改进
@@ -86,11 +91,7 @@ public:
  * 2.若正在初始化，其它运行初始化语句线程将被阻塞
  * 3.若正在初始化的线程递归调用初始化语句行为未定义
  * 确保了静态局部变量实现了线程安全
-*/
-LazySingleton* LazySingleton::GetInstance()
-{
-    static LazySingleton instance;
-    return &instance;
-}
+ */
 
+void TestSingleton();
 #endif

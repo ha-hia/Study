@@ -2,6 +2,6 @@ cmake_minimum_required(VERSION 3.8)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-aux_source_directory(. SingleFile)
+aux_source_directory(. PrototypeFile)
 
-add_library(Singleton ${SingleFile})
+add_library(Prototype ${PrototypeFile})
