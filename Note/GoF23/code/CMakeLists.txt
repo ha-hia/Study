@@ -7,5 +7,6 @@ project(GoF23)
 ###################### Targets #########################
 add_subdirectory(src)
 # add_subdirectory(src/Singleton)
-add_subdirectory(src/Prototype)
+# add_subdirectory(src/Prototype)
+add_subdirectory(src/Factory)
 ########################################################
