@@ -15,7 +15,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Result)
 target_link_libraries(GoF23
                       # Singleton
                       # Prototype
-                      Factory)
+                      # Factory
+                      Builder )
 
 
 

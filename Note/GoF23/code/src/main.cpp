@@ -4,9 +4,10 @@
 //#include "Factory/simpleFactory.h"
 //#include "Factory/FactoryWay.h"
 //#include "Factory/AbstractFactory.h"
-#include "Factory/ImproveFactory.h"
+//#include "Factory/ImproveFactory.h"
+#include "Builder/Builder.h"
 #include <iostream>
-using namespace ImproveFactory;
+//using namespace ImproveFactory;
 using namespace std;
 
 int main(int argc, char** argv)
@@ -14,6 +15,9 @@ int main(int argc, char** argv)
     //TestSingleton();
     //TestPrototype();
     //TestFactoryWay();
-    TestImproveFactory();
+    //TestImproveFactory();
+    TestBuilder();
+    
+    cout << "oooo" << endl;
     return 0;
 }
