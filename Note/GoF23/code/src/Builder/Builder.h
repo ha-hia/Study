@@ -44,7 +44,7 @@ private:
 public:
     ConcreteBuilderA()
     {
-        cout << "ConcreteBuilderA" << endl;
+        
     }
     ~ConcreteBuilderA(){}
 
@@ -52,7 +52,10 @@ public:
     void BuildPartB();
 };
 
-
+/**
+ * @brief 产品类
+ * @details 各个子模块组合成的复杂对象
+ */
 class Product
 {
 private:
@@ -61,7 +64,7 @@ private:
 public:
     Product()
     {
-        cout << "Product" << endl;
+        
     }
     ~Product(){}
     void SetPartA(string str = "PartA"){
@@ -73,6 +76,10 @@ public:
     void showInfo();
 };
 
+/**
+ * @brief 指挥者类
+ * @details 负责各子模块如何组合成复杂模块
+ */
 class Director
 {
 private:

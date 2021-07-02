@@ -17,7 +17,5 @@ int main(int argc, char** argv)
     //TestFactoryWay();
     //TestImproveFactory();
     TestBuilder();
-    
-    cout << "oooo" << endl;
     return 0;
 }

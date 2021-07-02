@@ -9,7 +9,6 @@ class AbstractBuilder{
 	+BuildPartA() virtual void
 	+BuildPartB() virtual void
 	+BuildPartC() virtual void
-	+AbstractBuilder(Product* input)
 	+Product* GetProduct() 
 	#Product* product
 }
@@ -40,6 +39,7 @@ class Client{
 AbstractBuilder <.. Client : 1
 Director <.. Client : 2
 Product <.. Client : 3
+
 ```
 
 ## 模式结构

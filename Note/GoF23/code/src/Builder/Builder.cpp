@@ -4,27 +4,13 @@
 using std::shared_ptr;
 using namespace std;
 
-AbstractBuilder::AbstractBuilder() : m_product(nullptr)
+AbstractBuilder::AbstractBuilder()
 {
-    cout << "AbstractBuilder" << endl;
-    if (m_product == nullptr)
-    {
-        cout << "1" << endl;
-    }
-    else
-    {
-        cout << "0" << endl;
-    }
-    
+    m_product = new Product;
 }
 AbstractBuilder::AbstractBuilder(Product* input) : m_product(input)
 {
-    if (nullptr == m_product)
-    {
-        cout << "null" << endl;
-    }
-    else
-        cout << "not null" << endl;
+
 }
 
 AbstractBuilder::~AbstractBuilder()
@@ -48,7 +34,7 @@ void ConcreteBuilderA::BuildPartB()
 void Product::showInfo()
 {
     cout << "Builder Test:" << " ";
-    cout << "PartA" << " " << "PartB" << endl;
+    cout << partA << " " << partB << endl;
 }
 
 Director::Director() : m_abstractBuilder(nullptr)
@@ -63,14 +49,15 @@ Director::~Director()
 {
     delete m_abstractBuilder;
 }
+
+/**
+ * @brief 获得组合的复杂对象
+ * @details 内部逻辑负责如何组织子模块的组合，并返回组合的对象
+ */
 Product* Director::CreateProduct()
 {
-    Product* temp =  m_abstractBuilder->GetProduct();
-    if (temp == nullptr)
-    {
-        cout << "nullptr" << endl;
-    }
-    
+    m_abstractBuilder->BuildPartA();
+    m_abstractBuilder->BuildPartB();
     return m_abstractBuilder->GetProduct();
 }
 
@@ -89,6 +76,10 @@ void TestBuilder()
     AbstractBuilder* abcBuilder = new ConcreteBuilderA;
     Director* director = new Director(abcBuilder);
     Product* newProduct = director->CreateProduct();
+    if(newProduct == nullptr)
+    {
+        cout << "OK" << endl;
+    }
     newProduct->showInfo();
 }
 
