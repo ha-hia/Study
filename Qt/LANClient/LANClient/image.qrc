@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/imageSrc">
+        <file>Pic/loginShow.gif</file>
+        <file>Pic/setting.png</file>
+        <file>Pic/head.jpg</file>
+        <file>Pic/close.png</file>
+    </qresource>
+</RCC>
