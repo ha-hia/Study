@@ -27,12 +27,18 @@ SOURCES += \
         main.cpp \
         View\CustomLabel.cpp \
         View\loginwidget.cpp \
-        Control\IMTcpSocket.cpp
+        Control\IMTcpSocket.cpp \
+    View\IMRegisterUi.cpp
 
 HEADERS += \
         View\CustomLabel.h \
         View\loginwidget.h \
-        Control\IMTcpSocket.h
+        Control\IMTcpSocket.h \
+    View\IMRegisterUi.h \
+    Control/IMConstant.h
 
 RESOURCES += \
     image.qrc
+
+FORMS += \
+    View\IMRegisterUi.ui

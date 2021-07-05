@@ -157,6 +157,12 @@ void LoginWidget::showExtend(bool pram)
     }
 }
 
+void LoginWidget::ClickRegister()
+{
+    registerUi = new IMRegisterUi;
+    registerUi->show();
+}
+
 void LoginWidget::ClickLogin(bool pram)
 {
     if(pram == true)
@@ -183,10 +189,7 @@ void LoginWidget::ClickClose()
     this->close();
 }
 
-void LoginWidget::ClickRegister()
-{
 
-}
 
 void LoginWidget::mousePressEvent(QMouseEvent *event)
 {

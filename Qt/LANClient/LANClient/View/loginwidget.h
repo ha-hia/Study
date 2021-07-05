@@ -1,6 +1,7 @@
 #ifndef LOGINWIDGET_H
 #define LOGINWIDGET_H
 
+#include "View/IMRegisterUi.h"
 #include "CustomLabel.h"
 #include <QWidget>
 #include <QLineEdit>
@@ -51,6 +52,7 @@ private:
     QPropertyAnimation* logining;
 
     bool isLogin;
+    IMRegisterUi* registerUi;
 };
 
 #endif // LOGINWIDGET_H
