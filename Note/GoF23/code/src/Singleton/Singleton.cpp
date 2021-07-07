@@ -27,6 +27,13 @@ HungrySingleton* HungrySingleton::GetInstance()
 LazySingleton* LazySingleton::GetInstance()
 {
     static LazySingleton instance;
+
+    /**
+        1、此处如果需要像这样返回指针类型，则需要防止没有备份实例的情况下，误操作 delete 
+        解决：将析构函数 private，防止外部调用删除实例，当程序终止时系统回收 static 局部变量实例
+
+        2、或者就老老实实返回引用，析构的位置就无所谓
+    */
     return &instance;
 }
 
