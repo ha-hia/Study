@@ -5,7 +5,7 @@
 
 IMRegisterUi::IMRegisterUi(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::IMRegisterUi)
+    ui(new Ui::IMRegisterUi),registerCtrl(nullptr)
 {
     ui->setupUi(this);
     this->setWindowTitle(tr("注册IM帐号"));
@@ -18,16 +18,12 @@ IMRegisterUi::~IMRegisterUi()
     delete ui;
 }
 
+/**
+ * @brief 初始化注册界面
+ */
 void IMRegisterUi::init()
 {
     ui->uiTitle->setText("注册用户信息");
-//    QPalette pa;
-//    pa.setColor(QPalette::WindowText, Qt::black);
-//    ui->uiTitle->setPalette(pa);
-//    QFont ft;
-//    ft.setPointSize(15);
-//    ui->uiTitle->setFont(ft);
-
     ui->nickName->setText(tr("*昵称"));
     ui->pwd->setText(tr("*密码"));
     ui->pwdInput->setPlaceholderText(tr("建议使用6-14位密码，不能包含空格"));
@@ -47,19 +43,18 @@ void IMRegisterUi::init()
     ui->answerInput->setPlaceholderText(tr("一定记住！"));
     ui->registerBtn->setText(tr("注册"));
     ui->cancelBtn->setText(tr("取消"));
-    //ui->gridLayout->setFixedSize(500, 390);
 }
 
 /**
- * @brief 点击取消按钮
-*/
+ * @brief 点击取消按钮，关闭注册界面
+ */
 void IMRegisterUi::on_cancelBtn_clicked()
 {
     this->close();
 }
 /**
- * @brief 单击注册按钮
-*/
+ * @brief 点击注册按钮，连接服务器，开始注册
+ */
 void IMRegisterUi::on_registerBtn_clicked()
 {
     // 判断昵称是否为空
@@ -105,5 +100,17 @@ void IMRegisterUi::on_registerBtn_clicked()
         return;
     }
 
+    /*************保存信息到结构体，后续需要改善为JSON格式*********************/
+    m_userInf.m_nickname = ui->nickNameInput->text();
+    m_userInf.m_password = ui->pwdInput->text();
+    m_userInf.m_question = ui->questionInput->text();
+    m_userInf.m_answer = ui->answerInput->text();
+    m_userInf.m_gender = ui->genderBox->currentText();
 
+    if(nullptr == registerCtrl)
+    {
+        registerCtrl = QSharedPointer<IMRegisterCtrl>(new IMRegisterCtrl);
+    }
+
+    registerCtrl->RegisterID(&m_userInf);
 }

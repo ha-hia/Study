@@ -334,15 +334,17 @@ struct UserInfor
     QString m_userID;
     QString m_nickname;
     QString m_password;
-    QString m_sex;
-    QDate m_birthday;
+    QString m_gender;
     QString m_question;
     QString m_answer;
-    QString m_name;
-    QString m_phone;
-    QString m_address;
-    QDateTime m_regDateTime;
-    //    QString m_mark;
+
+
+//    QDate m_birthday;
+//    QString m_name;
+//    QString m_phone;
+//    QString m_address;
+//    QDateTime m_regDateTime;
+//    //    QString m_mark;
     int m_status;
 
     UserInfor()
@@ -354,21 +356,19 @@ struct UserInfor
     friend QDataStream &operator<<(QDataStream &out, const UserInfor &user)
     {
        out << user.m_headPortrait << user.m_userID << user.m_nickname
-           << user.m_password << user.m_sex << user.m_birthday
-           << user.m_question << user.m_answer << user.m_name
-           << user.m_phone << user.m_address << user.m_regDateTime
+           << user.m_password << user.m_gender << user.m_question << user.m_answer
            << user.m_status;
+           //<< user.m_phone << user.m_address << user.m_regDateTime << user.m_birthday << user.m_name
+
        return out;
     }
 
     friend QDataStream &operator>>(QDataStream &in, UserInfor &user)
     {
-       in >> user.m_headPortrait >> user.m_userID >> user.m_nickname
-          >> user.m_password >> user.m_sex >> user.m_birthday
-          >> user.m_question >> user.m_answer >> user.m_name
-          >>  user.m_phone >> user.m_address >> user.m_regDateTime
-          >> user.m_status;
-       return in;
+       in >> user.m_headPortrait >> user.m_userID >> user.m_nickname >> user.m_password
+          >> user.m_gender >> user.m_question >> user.m_answer >> user.m_status;
+          //>>  user.m_phone >> user.m_address >> user.m_regDateTime >> user.m_birthday >> user.m_name
+        return in;
     }
 };
 

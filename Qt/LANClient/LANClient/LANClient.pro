@@ -28,14 +28,16 @@ SOURCES += \
         View\CustomLabel.cpp \
         View\loginwidget.cpp \
         Control\IMTcpSocket.cpp \
-    View\IMRegisterUi.cpp
+    View\IMRegisterUi.cpp \
+    Control/IMRegisterCtrl.cpp
 
 HEADERS += \
         View\CustomLabel.h \
         View\loginwidget.h \
         Control\IMTcpSocket.h \
     View\IMRegisterUi.h \
-    Control/IMConstant.h
+    Control/IMConstant.h \
+    Control/IMRegisterCtrl.h
 
 RESOURCES += \
     image.qrc

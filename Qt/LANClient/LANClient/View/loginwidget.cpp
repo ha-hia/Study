@@ -1,3 +1,5 @@
+
+#include "Control/IMTcpSocket.h"
 #include "loginwidget.h"
 #include <QString>
 #include <QMovie>
@@ -159,12 +161,14 @@ void LoginWidget::showExtend(bool pram)
 
 void LoginWidget::ClickRegister()
 {
+    setServer();
     registerUi = new IMRegisterUi;
     registerUi->show();
 }
 
 void LoginWidget::ClickLogin(bool pram)
 {
+    setServer();
     if(pram == true)
     {
         QString ID = m_IDLine->text();
@@ -213,4 +217,28 @@ void LoginWidget::mouseMoveEvent(QMouseEvent *event)
     {
         return mousePressEvent(event);
     }
+}
+
+void LoginWidget::setServer(const QString &ip, const quint16 port)
+{
+    QString tempAddr;
+    quint16 tempPort;
+    if(m_serverIP->text().isEmpty())
+    {
+        tempAddr = ip;
+    }
+    else {
+        tempAddr = m_serverIP->text();
+    }
+
+    if(m_serverPort->text().isEmpty())
+    {
+        tempPort = port;
+    }
+    else {
+        tempPort = m_serverPort->text().toUShort();
+    }
+
+    IMTcpSocket::m_hostAddress = QHostAddress(tempAddr);
+    IMTcpSocket::m_hostPort = tempPort;
 }

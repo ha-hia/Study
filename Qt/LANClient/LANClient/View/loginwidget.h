@@ -32,6 +32,10 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
 
+    /**
+     * @brief 根据拓展界面的服务器参数设置IP和PORT，或默认
+    */
+    void setServer(const QString &ip = "120.79.139.92", const quint16 port = 6666);
 
 private:
     QWidget* toolWidget;
