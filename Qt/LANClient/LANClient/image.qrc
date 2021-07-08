@@ -4,5 +4,6 @@
         <file>Pic/setting.png</file>
         <file>Pic/head.jpg</file>
         <file>Pic/close.png</file>
+        <file>Pic/circle2.gif</file>
     </qresource>
 </RCC>

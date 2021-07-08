@@ -1,16 +1,23 @@
 #include "IMRegisterUi.h"
 #include "ui_IMRegisterUi.h"
 #include <QPalette>
+#include <QMovie>
 #include <QMessageBox>
 
 IMRegisterUi::IMRegisterUi(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::IMRegisterUi),registerCtrl(nullptr)
+    ui(new Ui::IMRegisterUi)
 {
     ui->setupUi(this);
     this->setWindowTitle(tr("注册IM帐号"));
     this->setFixedSize(500, 390);
-    init();
+
+    registerCtrl = new IMRegisterCtrl;
+    Q_ASSERT(nullptr != registerCtrl);
+    subView.hide();
+
+    InitWidget();
+    connect( registerCtrl, &IMRegisterCtrl::SigUiRegisterAgain, this, &IMRegisterUi::ShowRegisterAgain);
 }
 
 IMRegisterUi::~IMRegisterUi()
@@ -21,7 +28,7 @@ IMRegisterUi::~IMRegisterUi()
 /**
  * @brief 初始化注册界面
  */
-void IMRegisterUi::init()
+void IMRegisterUi::InitWidget()
 {
     ui->uiTitle->setText("注册用户信息");
     ui->nickName->setText(tr("*昵称"));
@@ -31,9 +38,10 @@ void IMRegisterUi::init()
     ui->pwdInput->setMaxLength(14);
 
     ui->pwdConfirm->setText(tr("*确认密码"));
-    ui->pwdInput->setPlaceholderText(tr("请再次输入密码"));
-    ui->pwdInput->setEchoMode(QLineEdit::Password);
-    ui->pwdInput->setMaxLength(14);
+    ui->confirmPwdInput->setPlaceholderText(tr("请再次输入密码"));
+    ui->confirmPwdInput->setEchoMode(QLineEdit::Password);
+    ui->confirmPwdInput->setMaxLength(14);
+
     ui->gender->setText(tr("性别"));
     ui->genderBox->addItem(tr("男"));
     ui->genderBox->addItem(tr("女"));
@@ -57,48 +65,48 @@ void IMRegisterUi::on_cancelBtn_clicked()
  */
 void IMRegisterUi::on_registerBtn_clicked()
 {
-    // 判断昵称是否为空
-    if (ui->nickNameInput->text().isEmpty())
-    {
-        QMessageBox::about(this, tr("提示"), tr("昵称不能为空"));
-        return;
-    }
-    // 判断密码是否为空
-    if (ui->pwdInput->text().isEmpty())
-    {
-        QMessageBox::about(this, tr("提示"), tr("密码不能为空"));
-        return;
-    }
-    // 判断密码是否符合要求
-    if (ui->pwdInput->text().length()>14 || ui->pwdInput->text().length()<6)
-    {
-        QMessageBox::about(this, tr("提示"), tr("密码长度不符合"));
-        return;
-    }
-    // 判断确认密码是否为空
-    if (ui->confirmPwdInput->text().isEmpty())
-    {
-        QMessageBox::about(this, tr("提示"), tr("请确认密码"));
-        return;
-    }
-    // 判断密码是否一致
-    if (ui->pwdInput->text().compare(ui->confirmPwdInput->text()) != 0)
-    {
-        QMessageBox::about(this, tr("提示"), tr("密码不一致"));
-        return;
-    }
-    // 判断密保问题是否为空
-    if (ui->questionInput->text().isEmpty())
-    {
-        QMessageBox::about(this, tr("提示"), tr("密保不能为空"));
-        return;
-    }
-    // 判断问题答案是否为空
-    if (ui->answerInput->text().isEmpty())
-    {
-        QMessageBox::about(this, tr("提示"), tr("问题答案不能为空"));
-        return;
-    }
+//    // 判断昵称是否为空
+//    if (ui->nickNameInput->text().isEmpty())
+//    {
+//        QMessageBox::about(this, tr("提示"), tr("昵称不能为空"));
+//        return;
+//    }
+//    // 判断密码是否为空
+//    if (ui->pwdInput->text().isEmpty())
+//    {
+//        QMessageBox::about(this, tr("提示"), tr("密码不能为空"));
+//        return;
+//    }
+//    // 判断密码是否符合要求
+//    if (ui->pwdInput->text().length()>14 || ui->pwdInput->text().length()<6)
+//    {
+//        QMessageBox::about(this, tr("提示"), tr("密码长度不符合"));
+//        return;
+//    }
+//    // 判断确认密码是否为空
+//    if (ui->confirmPwdInput->text().isEmpty())
+//    {
+//        QMessageBox::about(this, tr("提示"), tr("请确认密码"));
+//        return;
+//    }
+//    // 判断密码是否一致
+//    if (ui->pwdInput->text().compare(ui->confirmPwdInput->text()) != 0)
+//    {
+//        QMessageBox::about(this, tr("提示"), tr("密码不一致"));
+//        return;
+//    }
+//    // 判断密保问题是否为空
+//    if (ui->questionInput->text().isEmpty())
+//    {
+//        QMessageBox::about(this, tr("提示"), tr("密保不能为空"));
+//        return;
+//    }
+//    // 判断问题答案是否为空
+//    if (ui->answerInput->text().isEmpty())
+//    {
+//        QMessageBox::about(this, tr("提示"), tr("问题答案不能为空"));
+//        return;
+//    }
 
     /*************保存信息到结构体，后续需要改善为JSON格式*********************/
     m_userInf.m_nickname = ui->nickNameInput->text();
@@ -109,8 +117,18 @@ void IMRegisterUi::on_registerBtn_clicked()
 
     if(nullptr == registerCtrl)
     {
-        registerCtrl = QSharedPointer<IMRegisterCtrl>(new IMRegisterCtrl);
+        registerCtrl = new IMRegisterCtrl;
+        Q_ASSERT(nullptr != registerCtrl);
     }
 
-    registerCtrl->RegisterID(&m_userInf);
+    this->hide();
+    subView.show();
+    registerCtrl->RegisterID(m_userInf);
+
+}
+
+void IMRegisterUi::ShowRegisterAgain()
+{
+    this->subView.close();
+    this->show();
 }

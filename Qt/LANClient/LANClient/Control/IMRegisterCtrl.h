@@ -16,13 +16,18 @@ class IMRegisterCtrl : public QObject
 public:
     explicit IMRegisterCtrl(QObject *parent = nullptr);
 
-    void RegisterID(UserInfor* input);
+    void RegisterID(UserInfor& input);
 signals:
-
-public slots:
+    void SigUiRegisterAgain();
+private:
+    void RegisterRequest();
+    void UiRegisterAgain();
 
 private:
-
+    /// 保存传递过来的注册信息
+    UserInfor m_userInfo;
+    /// 单例，无需 delete，程序结束系统自动回收
+    IMTcpSocket* registerSocket;
 };
 
 #endif // IMREGISTERCTRL_H
