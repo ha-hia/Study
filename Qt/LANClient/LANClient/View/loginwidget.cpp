@@ -1,6 +1,7 @@
 
-#include "Control/IMTcpSocket.h"
 #include "loginwidget.h"
+#include "Control/IMTcpSocket.h"
+
 #include <QString>
 #include <QMovie>
 #include <QHBoxLayout>
@@ -118,8 +119,9 @@ void LoginWidget::init()
     m_extendWidget->hide();
 }
 
-void LoginWidget::UiChangeShow(bool input)
+void LoginWidget::RegisterUiChange(bool input)
 {
+    /// 登陆中
     if(true == input)
     {
         m_loginBtn->setText(tr("取消"));
@@ -135,6 +137,7 @@ void LoginWidget::UiChangeShow(bool input)
         logining->setEndValue(QRect(150, 190, 105, 105));
         logining->start();
     }
+    /// 取消登陆
     else
     {
         m_loginBtn->setText(tr("登陆"));
@@ -162,7 +165,7 @@ void LoginWidget::showExtend(bool pram)
 void LoginWidget::ClickRegister()
 {
     setServer();
-    registerUi = new IMRegisterUi;
+    registerUi = new IMRegisterUi();
     registerUi->show();
 }
 
@@ -178,12 +181,13 @@ void LoginWidget::ClickLogin(bool pram)
             QMessageBox::critical(this, "错误", "账号或密码不能为空！");
             return;
         }
-        UiChangeShow(true);
+        RegisterUiChange(true);
         //向登录控制类传递登录数据，具体的请求在控制类里处理，待实现
+        m_loginCtrl = new IMLoginCtrl(this);
     }
     else
     {
-        UiChangeShow(false);
+        RegisterUiChange(false);
         isLogin = false;
     }
 }

@@ -9,24 +9,27 @@
 #include "Control/IMTcpSocket.h"
 #include "Control/IMConstant.h"
 #include <QObject>
+#include <QString>
 
 class IMRegisterCtrl : public QObject
 {
     Q_OBJECT
 public:
     explicit IMRegisterCtrl(QObject *parent = nullptr);
+    ~IMRegisterCtrl();
 
     void RegisterID(UserInfor& input);
 signals:
-    void SigUiRegisterAgain();
+    void sigRegisterFailed();
+    void sigGetRegiterRet(QString& res);
 private:
     void RegisterRequest();
-    void UiRegisterAgain();
-
+    void RegisterFailed();
+    void RegisterResult();
 private:
     /// 保存传递过来的注册信息
     UserInfor m_userInfo;
-    /// 单例，无需 delete，程序结束系统自动回收
+    ///
     IMTcpSocket* registerSocket;
 };
 

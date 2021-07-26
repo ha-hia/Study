@@ -1,6 +1,7 @@
 #ifndef LOGINWIDGET_H
 #define LOGINWIDGET_H
 
+#include "control/IMLoginCtrl.h"
 #include "View/IMRegisterUi.h"
 #include "CustomLabel.h"
 #include <QWidget>
@@ -20,7 +21,7 @@ public:
     //界面布局
     void init();
     //登陆时界面变化
-    void UiChangeShow(bool input);
+    void RegisterUiChange(bool input);
 
 
 public slots:
@@ -57,6 +58,7 @@ private:
 
     bool isLogin;
     IMRegisterUi* registerUi;
+    IMLoginCtrl* m_loginCtrl; // 用于控制登录
 };
 
 #endif // LOGINWIDGET_H

@@ -18,6 +18,8 @@ void IMTcpSocket::LinkSlotAndSignal()
     /// 信号重载，使用函数指针指定
     void(QAbstractSocket::*ptr)(QAbstractSocket::SocketError) = &QAbstractSocket::error;
     connect(this, ptr, this, &IMTcpSocket::ShowSocketError);
+
+
 //    connect(this, static_cast<void(QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
 //          this, &IMTcpSocket::ShowSocketError);
 
@@ -31,7 +33,6 @@ void IMTcpSocket::ConnectToHost()
 {
     this->abort();
     this->connectToHost(this->m_hostAddress, this->m_hostPort);
-//    qDebug() << this->error();
 }
 
 void IMTcpSocket::LinkSuccess()

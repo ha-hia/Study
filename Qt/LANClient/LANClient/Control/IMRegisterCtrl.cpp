@@ -3,20 +3,31 @@
 #include "IMRegisterCtrl.h"
 
 #include <QAbstractSocket>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonParseError>
 
 
 IMRegisterCtrl::IMRegisterCtrl(QObject *parent)
     : QObject(parent)
 {
-    registerSocket = IMTcpSocket::GetInstance();
+    registerSocket = new IMTcpSocket(this);
 
     /// 成功连接，则向服务器发送注册请求
     connect(this->registerSocket, &IMTcpSocket::connected, this, &IMRegisterCtrl::RegisterRequest);
 
     /// 当连接出现错误，则再次显示注册界面
     void(QAbstractSocket::*ptr)(QAbstractSocket::SocketError) = &QAbstractSocket::error;
-    connect(this->registerSocket, ptr, this, &IMRegisterCtrl::UiRegisterAgain);
+//    connect(this->registerSocket, ptr, this, &IMRegisterCtrl::RegisterFailed);
+    connect(this->registerSocket, ptr, this, &IMRegisterCtrl::RegisterResult);
 
+    /// 接收到回复消息
+    connect(this->registerSocket, &IMTcpSocket::readyRead, this, &IMRegisterCtrl::RegisterResult);
+
+}
+
+IMRegisterCtrl::~IMRegisterCtrl()
+{
 }
 /**
  * @brief 根据输入的 input 信息，向服务器注册账号 m
@@ -38,27 +49,71 @@ void IMRegisterCtrl::RegisterID(UserInfor& input)
  */
 void IMRegisterCtrl::RegisterRequest()
 {
-    qDebug() << "register to server...";
+    QJsonObject json;
+    json.insert("type",REGISTER);
+    json.insert("nikeName", m_userInfo.m_nickname);
+    json.insert("password", m_userInfo.m_password);
+    json.insert("gender", m_userInfo.m_gender);
+    json.insert("question", m_userInfo.m_question);
+    json.insert("answer", m_userInfo.m_answer);
+    /// 离线状态
+    json.insert("status", 1);
+    /// 初始头像
+    json.insert("headPortrait", 1);
 
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out << quint16(0);
-    out << int(REGISTER);
-    out << m_userInfo;
-    out.device()->seek(0);
-    qDebug() << block.size();
-    qDebug() << sizeof(quint16);
-    out << quint16(block.size() - sizeof(quint16));
+    QJsonDocument document;
+    document.setObject(json);
+    QByteArray byte_array = document.toJson(QJsonDocument::Compact);
 
-    registerSocket->write(block);
+    registerSocket->write(byte_array);
+    qDebug() << "send: " << byte_array;
 }
 
 /**
- * @brief 发送信号，再次显示注册界面
+ * 对应21行,优化至95-99行
  */
-void IMRegisterCtrl::UiRegisterAgain()
+void IMRegisterCtrl::RegisterFailed()
 {
-    emit SigUiRegisterAgain();
+    emit sigRegisterFailed();
+}
+
+void IMRegisterCtrl::RegisterResult()
+{
+    QByteArray result= registerSocket->readAll();
+    if(result.size() == 0)
+    {
+        QString strRet = "";
+        emit sigGetRegiterRet(strRet);
+    }
+
+    QJsonParseError json_error;
+    QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
+    QJsonObject json = document.object();
+
+    int type = json.value("type").toInt();
+    switch (type) {
+        case MyMessageType::REGISTER_FAILED:
+        {
+            QString strRet(tr("客官不好意思,该昵称已注册!\n请再次注册！"));
+            emit sigGetRegiterRet(strRet);
+            break;
+        }
+        case MyMessageType::REGISTER_SUCEESS:
+        {
+            QString strUserID = json.value("userID").toString();
+            QString strRet(tr("恭喜客官,注册成功！\n登录ID: "));
+            strRet += strUserID;
+            emit sigGetRegiterRet(strRet);
+            break;
+        }
+        default:
+        {
+            QString strRet(tr("未知错误"));
+            emit sigGetRegiterRet(strRet);
+            break;
+        }
+    }
+
 }
 
 

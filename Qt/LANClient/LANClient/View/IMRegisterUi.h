@@ -8,12 +8,13 @@
 #ifndef IMREGISTERUI_H
 #define IMREGISTERUI_H
 
-#include "SubRegisterView.h"
 #include "Control/IMRegisterCtrl.h"
 #include "Control/IMConstant.h"
 #include <QWidget>
 #include <QLabel>
 #include <QSharedPointer>
+#include <QMovie>
+#include <QDebug>
 
 namespace Ui {
 class IMRegisterUi;
@@ -46,15 +47,17 @@ private:
     /**
      * @brief 注册错误/成功时，显示注册界面
      */
-    void ShowRegisterAgain();
+    void RegisterFailed();
+    void ShowReturnInfo(QString& res);
 
 private:
     Ui::IMRegisterUi *ui;
     UserInfor m_userInf;
-
-    SubRegisterView subView;
+    /// 注册逻辑类
     IMRegisterCtrl* registerCtrl;
 
+    QLabel *registeringLabel;
+    QMovie* circleGif;
 };
 
 #endif // IMREGISTERUI_H

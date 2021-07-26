@@ -30,7 +30,7 @@ SOURCES += \
         Control\IMTcpSocket.cpp \
     View\IMRegisterUi.cpp \
     Control/IMRegisterCtrl.cpp \
-    View/SubRegisterView.cpp
+    Control/IMLoginCtrl.cpp
 
 HEADERS += \
         View\CustomLabel.h \
@@ -39,12 +39,11 @@ HEADERS += \
     View\IMRegisterUi.h \
     Control/IMConstant.h \
     Control/IMRegisterCtrl.h \
-    View/SubRegisterView.h
+    Control/IMLoginCtrl.h
 
 RESOURCES += \
     image.qrc
 
 FORMS += \
-    View\IMRegisterUi.ui \
-    View/SubRegisterView.ui
+    View\IMRegisterUi.ui
 

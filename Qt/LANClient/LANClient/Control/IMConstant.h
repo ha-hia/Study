@@ -20,6 +20,89 @@ class IMClientSocketCtrl;
 
 static const QString GROUP_NAME_DEFAULT = QString(QObject::tr("New Friends"));
 
+/******************************************************************************/
+// 登录状态
+enum LoginStatus
+{
+    OFFLINE = 1,
+    ONLINE = 2,     // 在线
+    INVISIBLE,      // 隐身
+    BUSY,           // 忙碌
+    LEAVE,          // 离开
+    NOTDISTURB     // 请勿打扰
+};
+
+// 用户详细信息
+struct UserInfor
+{
+    //    QString m_picture;
+    int m_headPortrait;
+    QString m_userID;
+    QString m_nickname;
+    QString m_password;
+    QString m_gender;
+    QString m_question;
+    QString m_answer;
+    QString m_regDateTime;
+
+
+//    QDate m_birthday;
+//    QString m_name;
+//    QString m_phone;
+//    QString m_address;
+//    QDateTime m_regDateTime;
+//    //    QString m_mark;
+    int m_status;
+
+    UserInfor()
+    {
+       m_status = OFFLINE;
+       m_headPortrait = 1;
+    }
+    // 重载输入输出操作符
+    friend QDataStream &operator<<(QDataStream &out, const UserInfor &user)
+    {
+       out << user.m_headPortrait << user.m_userID << user.m_nickname
+           << user.m_password << user.m_gender << user.m_question << user.m_answer
+           << user.m_status;
+           //<< user.m_phone << user.m_address << user.m_regDateTime << user.m_birthday << user.m_name
+
+       return out;
+    }
+
+    friend QDataStream &operator>>(QDataStream &in, UserInfor &user)
+    {
+       in >> user.m_headPortrait >> user.m_userID >> user.m_nickname >> user.m_password
+          >> user.m_gender >> user.m_question >> user.m_answer >> user.m_status;
+          //>>  user.m_phone >> user.m_address >> user.m_regDateTime >> user.m_birthday >> user.m_name
+        return in;
+    }
+};
+
+enum MyMessageType
+{
+/**********************ServertoClient*********************************/
+    REGISTER_SUCEESS = 1024,
+    REGISTER_FAILED
+};
+/**************************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 struct ServerNode
 {
     QString ipAddress;			//服务器地址
@@ -28,16 +111,7 @@ struct ServerNode
     {	port = 0;	}
 };
 
-// 登录状态
-enum LoginStatus
-{
-    ONLINE = 0,    // 在线
-    INVISIBLE = 1, // 隐身
-    BUSY = 2,      // 忙碌
-    LEAVE = 3,     // 离开
-    NOTDISTURB = 4,// 请勿打扰
-    OFFLINE = 5
-};
+
 
 //群成员身份
 enum FlockStatus
@@ -66,8 +140,8 @@ enum MessageType
 {
     /***********************client to server************************/
     CHECK_CONNECTION,           // 检查是否能与服务器连接
-    LOGIN,                      // 登录
     REGISTER,                   // 注册
+    LOGIN,                      // 登录
     GET_QUESTION_ANSWER,    // 获取密保问题以及答案
     GET_QUESTION_ANSWER_SUCCESS,
     GET_QUESTION_ANSWER_FAIL,
@@ -326,51 +400,7 @@ struct MailInformation
     }
 };
 
-// 用户详细信息
-struct UserInfor
-{
-    //    QString m_picture;
-    int m_headPortrait;
-    QString m_userID;
-    QString m_nickname;
-    QString m_password;
-    QString m_gender;
-    QString m_question;
-    QString m_answer;
 
-
-//    QDate m_birthday;
-//    QString m_name;
-//    QString m_phone;
-//    QString m_address;
-//    QDateTime m_regDateTime;
-//    //    QString m_mark;
-    int m_status;
-
-    UserInfor()
-    {
-       m_status = OFFLINE;
-       m_headPortrait = 1;
-    }
-    // 重载输入输出操作符
-    friend QDataStream &operator<<(QDataStream &out, const UserInfor &user)
-    {
-       out << user.m_headPortrait << user.m_userID << user.m_nickname
-           << user.m_password << user.m_gender << user.m_question << user.m_answer
-           << user.m_status;
-           //<< user.m_phone << user.m_address << user.m_regDateTime << user.m_birthday << user.m_name
-
-       return out;
-    }
-
-    friend QDataStream &operator>>(QDataStream &in, UserInfor &user)
-    {
-       in >> user.m_headPortrait >> user.m_userID >> user.m_nickname >> user.m_password
-          >> user.m_gender >> user.m_question >> user.m_answer >> user.m_status;
-          //>>  user.m_phone >> user.m_address >> user.m_regDateTime >> user.m_birthday >> user.m_name
-        return in;
-    }
-};
 
 // 好友信息
 struct FriendInformation

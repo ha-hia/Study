@@ -1,8 +1,14 @@
+
 #include "IMRegisterUi.h"
 #include "ui_IMRegisterUi.h"
+
 #include <QPalette>
 #include <QMovie>
 #include <QMessageBox>
+
+#include <QJsonParseError>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 IMRegisterUi::IMRegisterUi(QWidget *parent) :
     QWidget(parent),
@@ -10,19 +16,22 @@ IMRegisterUi::IMRegisterUi(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowTitle(tr("注册IM帐号"));
+    this->setAttribute(Qt::WA_DeleteOnClose);
     this->setFixedSize(500, 390);
 
-    registerCtrl = new IMRegisterCtrl;
+    registerCtrl = new IMRegisterCtrl(this);
     Q_ASSERT(nullptr != registerCtrl);
-    subView.hide();
 
     InitWidget();
-    connect( registerCtrl, &IMRegisterCtrl::SigUiRegisterAgain, this, &IMRegisterUi::ShowRegisterAgain);
+//    connect( registerCtrl, &IMRegisterCtrl::sigRegisterFailed, this, &IMRegisterUi::RegisterFailed);
+
+    connect( registerCtrl, &IMRegisterCtrl::sigGetRegiterRet, this, &IMRegisterUi::ShowReturnInfo);
 }
 
 IMRegisterUi::~IMRegisterUi()
 {
     delete ui;
+    qDebug() << "IMRegisterUi destory" ;
 }
 
 /**
@@ -30,6 +39,17 @@ IMRegisterUi::~IMRegisterUi()
  */
 void IMRegisterUi::InitWidget()
 {
+    /*******************************隐藏的注册中界面**************************************/
+    registeringLabel = new QLabel;
+    registeringLabel->setParent(this);
+    registeringLabel->setFixedSize(120, 120);
+    registeringLabel->move(210, 135);
+
+    circleGif = new QMovie(":/imageSrc/Pic/circle2.gif");
+    registeringLabel->setMovie(circleGif);
+    circleGif->start();
+    registeringLabel->hide();
+    /*********************************************************************/
     ui->uiTitle->setText("注册用户信息");
     ui->nickName->setText(tr("*昵称"));
     ui->pwd->setText(tr("*密码"));
@@ -65,48 +85,54 @@ void IMRegisterUi::on_cancelBtn_clicked()
  */
 void IMRegisterUi::on_registerBtn_clicked()
 {
-//    // 判断昵称是否为空
-//    if (ui->nickNameInput->text().isEmpty())
-//    {
-//        QMessageBox::about(this, tr("提示"), tr("昵称不能为空"));
-//        return;
-//    }
-//    // 判断密码是否为空
-//    if (ui->pwdInput->text().isEmpty())
-//    {
-//        QMessageBox::about(this, tr("提示"), tr("密码不能为空"));
-//        return;
-//    }
-//    // 判断密码是否符合要求
-//    if (ui->pwdInput->text().length()>14 || ui->pwdInput->text().length()<6)
-//    {
-//        QMessageBox::about(this, tr("提示"), tr("密码长度不符合"));
-//        return;
-//    }
-//    // 判断确认密码是否为空
-//    if (ui->confirmPwdInput->text().isEmpty())
-//    {
-//        QMessageBox::about(this, tr("提示"), tr("请确认密码"));
-//        return;
-//    }
-//    // 判断密码是否一致
-//    if (ui->pwdInput->text().compare(ui->confirmPwdInput->text()) != 0)
-//    {
-//        QMessageBox::about(this, tr("提示"), tr("密码不一致"));
-//        return;
-//    }
-//    // 判断密保问题是否为空
-//    if (ui->questionInput->text().isEmpty())
-//    {
-//        QMessageBox::about(this, tr("提示"), tr("密保不能为空"));
-//        return;
-//    }
-//    // 判断问题答案是否为空
-//    if (ui->answerInput->text().isEmpty())
-//    {
-//        QMessageBox::about(this, tr("提示"), tr("问题答案不能为空"));
-//        return;
-//    }
+    ui->pwdInput->setReadOnly(true);
+    ui->answerInput->setReadOnly(true);
+    ui->nickNameInput->setReadOnly(true);
+    ui->questionInput->setReadOnly(true);
+    ui->confirmPwdInput->setReadOnly(true);
+
+    // 判断昵称是否为空
+    if (ui->nickNameInput->text().isEmpty())
+    {
+        QMessageBox::about(this, tr("提示"), tr("昵称不能为空"));
+        return;
+    }
+    // 判断密码是否为空
+    if (ui->pwdInput->text().isEmpty())
+    {
+        QMessageBox::about(this, tr("提示"), tr("密码不能为空"));
+        return;
+    }
+    // 判断密码是否符合要求
+    if (ui->pwdInput->text().length()>14 || ui->pwdInput->text().length()<6)
+    {
+        QMessageBox::about(this, tr("提示"), tr("密码长度不符合"));
+        return;
+    }
+    // 判断确认密码是否为空
+    if (ui->confirmPwdInput->text().isEmpty())
+    {
+        QMessageBox::about(this, tr("提示"), tr("请确认密码"));
+        return;
+    }
+    // 判断密码是否一致
+    if (ui->pwdInput->text().compare(ui->confirmPwdInput->text()) != 0)
+    {
+        QMessageBox::about(this, tr("提示"), tr("密码不一致"));
+        return;
+    }
+    // 判断密保问题是否为空
+    if (ui->questionInput->text().isEmpty())
+    {
+        QMessageBox::about(this, tr("提示"), tr("密保不能为空"));
+        return;
+    }
+    // 判断问题答案是否为空
+    if (ui->answerInput->text().isEmpty())
+    {
+        QMessageBox::about(this, tr("提示"), tr("问题答案不能为空"));
+        return;
+    }
 
     /*************保存信息到结构体，后续需要改善为JSON格式*********************/
     m_userInf.m_nickname = ui->nickNameInput->text();
@@ -121,14 +147,22 @@ void IMRegisterUi::on_registerBtn_clicked()
         Q_ASSERT(nullptr != registerCtrl);
     }
 
-    this->hide();
-    subView.show();
+    registeringLabel->show();
     registerCtrl->RegisterID(m_userInf);
 
 }
 
-void IMRegisterUi::ShowRegisterAgain()
+void IMRegisterUi::RegisterFailed()
 {
-    this->subView.close();
-    this->show();
+    this->close();
+}
+
+void IMRegisterUi::ShowReturnInfo(QString& res)
+{
+    this->close();
+    if(res.isEmpty())
+    {
+        return;
+    }
+    QMessageBox::about(this, tr("提示"), res);
 }
