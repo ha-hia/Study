@@ -92,13 +92,13 @@ void IMRegisterCtrl::RegisterResult()
 
     int type = json.value("type").toInt();
     switch (type) {
-        case MyMessageType::REGISTER_FAILED:
+        case REGISTER_FAILED:
         {
             QString strRet(tr("客官不好意思,该昵称已注册!\n请再次注册！"));
             emit sigGetRegiterRet(strRet);
             break;
         }
-        case MyMessageType::REGISTER_SUCEESS:
+        case REGISTER_SUCCESS:
         {
             QString strUserID = json.value("userID").toString();
             QString strRet(tr("恭喜客官,注册成功！\n登录ID: "));

@@ -47,7 +47,7 @@ private:
     /**
      * @brief 注册错误/成功时，显示注册界面
      */
-    void RegisterFailed();
+//    void RegisterFailed();
     void ShowReturnInfo(QString& res);
 
 private:

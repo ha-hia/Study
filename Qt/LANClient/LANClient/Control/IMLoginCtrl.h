@@ -32,15 +32,17 @@ public:
                      const int status = ONLINE);
     // 获取密保信息
     void getQuestionAndAnswer(const QString &id);
+    /// 断开连接，点击取消登陆时使用
+    void AbortConnect();
 
 signals:
-    void getLoginMessgae(const QString &, bool isLogin = false,
-                         const UserInfor * me = 0);
+    void getLoginMessgae(const QString &, bool isLogin = false, const UserInfor * me = 0);
     void getQuestionAndAnswerSuccess(const TempStrings & tmpStr);
 
 public slots:
     // 改变登录信息
-    void changeLoginMessage(const QString &mes, bool isLogin);
+//    void changeLoginMessage(const QString &mes, bool isLogin);
+    void ReturnSocketError(QAbstractSocket::SocketError error);
 
 
 private slots:
@@ -59,7 +61,7 @@ private:
 
 private:
     int m_kind;
-    quint16 m_blockSize;
+
     IMTcpSocket *m_tcpSocket;
     LoginInformation m_loginInfo;
     UserInfor m_myself;

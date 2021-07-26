@@ -82,8 +82,8 @@ struct UserInfor
 enum MyMessageType
 {
 /**********************ServertoClient*********************************/
-    REGISTER_SUCEESS = 1024,
-    REGISTER_FAILED
+//    REGISTER_SUCEESS = 1024,
+//    REGISTER_FAILED
 };
 /**************************************************************************************/
 
@@ -138,23 +138,32 @@ enum MailStatus
 // 信息类型
 enum MessageType
 {
+    REGISTER = 1,           /// 注册账号
+    LOOKFORPWD,             /// 找回密码
+    LOGIN,                  /// 登陆
+    SENDTEXT,               /// 发送文字信息
+    SENDVIDEIO,             /// 发送音频信息
+    PLAYGAME,               /// 游戏互动
+    PLAYMUSIC,              /// 播放音乐
+    GET_ALL_FRIENDS,        /// 获取所有好友信息
+    ADDFRIEND,              /// 添加好友
+    ADDFRIEND_REQUEST,      /// 添加好友的subtype
+    ADDFRIEND_REPLY,        /// 添加好友的subtype
+    TALK,                   /// 发送对话
+    TALK_MESSAGE,           /// 聊天请求subtype：好友间发送信息
+    SENDFILE,               /// 聊天请求subtype：发送文件
+    TALK_FLOCK,            /// 聊天请求subtype：群对话
     /***********************client to server************************/
     CHECK_CONNECTION,           // 检查是否能与服务器连接
-    REGISTER,                   // 注册
-    LOGIN,                      // 登录
     GET_QUESTION_ANSWER,    // 获取密保问题以及答案
     GET_QUESTION_ANSWER_SUCCESS,
     GET_QUESTION_ANSWER_FAIL,
 
     CHECK_MESSAGE,              // 检查有无给自己的信息（登录时检查）
-
-    GET_ALL_FRIENDS,            // 获取所有好友信息
     GET_ALL_FLOCKS,             // 获取所有群信息
     GET_ALL_DISCUSSIONS,        // 获取所有讨论组信息
     GET_FLOCK_MEMBERS,          // 获取群成员
     GET_DISCUSSIONS_MEMBERS,    // 获取讨论组成员
-
-    TALK,				// 发送对话
     ADD_FRIEND,                 // 添加好友
 
 
@@ -170,17 +179,22 @@ enum MessageType
     CHANGE_INFORMATION,			// 改变自己的信息
     CHANGE_REMARK,				// 改变（好友）备注
     CHANGE_PASSWORD,			    // 修改密码
-    CHANGE_STATUE,				// 改变自身状态
     // 还有分组好友管理
     QUIT,						// 退出
 
     /***********************server to client************************/
-
-    LOGIN_SUCCESS ,				// 登录成功
-    LOGIN_FAIL,			        // 登录失败
-    HAVE_LOGINED,				// 已经登录
-    REGISTER_SUCCESS,	        // 注册成功
-    REGISTER_FAIL,			    // 注册失败
+    REGISTER_SUCCESS = 1024,    /// 注册成功
+    REGISTER_FAILED,            /// 注册失败，对应昵称已存在
+    HAVE_LOGINED,                /// 重复登陆
+    LOGIN_FAILED,               /// 登陆失败
+    LOGIN_SUCCESS,               /// 登陆成功
+    GETFRIENDINFO_SUCCESS,      /// 获取好友信息成功
+    GETFRIENDINFO_FAILED,      /// 获取好友信息失败
+    GETFRIENDINFO_NONE,        /// 获取好友信息,没有好友
+    CHANGE_STATUE,			   /// 改变自身状态
+    ADDFRIEND_AGREE,		   /// 同意加好友
+    ADDFRIEND_REFUSE,		   /// 拒绝加好友
+    ADDFRIEND_NOUSER,          /// 用户不存在
 
     REMOVE_BOX,               // 删除分组
     REMOVE_BOX_SUCCESS,
@@ -248,7 +262,7 @@ enum MessageType
     BE_DELETED,		     // 自己被好友删除了
 
     MESSAGE,				 // 普通信息
-    TALK_MESSAGE,         // 聊天信息
+//    TALK_MESSAGE,         // 聊天信息
 
     REQUEST_FLOCK,   // 用户请求加入群
     FLOCK_AGREE,    // 群主同意用户加入
@@ -305,7 +319,6 @@ enum MessageType
     CHANGE_DISCUSSION_SUCCESS,
     CHANGE_DISCUSSION_FAIL,
 
-    TALK_FLOCK,               // 群对话
     TALK_DISCUSSION,          // 讨论组对话
 
     REQUEST_VIDEO,

@@ -1,6 +1,7 @@
 #ifndef LOGINWIDGET_H
 #define LOGINWIDGET_H
 
+#include "control/IMConstant.h"
 #include "control/IMLoginCtrl.h"
 #include "View/IMRegisterUi.h"
 #include "CustomLabel.h"
@@ -23,12 +24,12 @@ public:
     //登陆时界面变化
     void RegisterUiChange(bool input);
 
-
 public slots:
     void showExtend(bool pram);
     void ClickLogin(bool pram);
     void ClickClose();
     void ClickRegister();
+    void HandleLogin(const QString & strRet, bool isLogin = false, const UserInfor* loginInfo = nullptr);
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -57,8 +58,8 @@ private:
     QPropertyAnimation* logining;
 
     bool isLogin;
-    IMRegisterUi* registerUi;
-    IMLoginCtrl* m_loginCtrl; // 用于控制登录
+    IMRegisterUi* registerUi;   /// 注册界面
+    IMLoginCtrl* m_loginCtrl;   /// 用于控制登录
 };
 
 #endif // LOGINWIDGET_H

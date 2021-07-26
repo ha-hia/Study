@@ -16,21 +16,30 @@ Changes：
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonParseError>
+#include <QIODevice>
 
 // public:-----------------------------------------------------------------
 IMLoginCtrl::IMLoginCtrl(QObject *parent) :
     QObject(parent)
 {
     m_tcpSocket = new IMTcpSocket(this);
-    connect(m_tcpSocket, SIGNAL(showConnectionStatus(QString, bool)),
-            this, SLOT(changeLoginMessage(QString, bool)));
+//    connect(m_tcpSocket, SIGNAL(showConnectionStatus(QString, bool)),this, SLOT(changeLoginMessage(QString, bool)));
 
-    connect(m_tcpSocket, SIGNAL(connected()), this, SLOT(sendRequest()));
-    connect(m_tcpSocket, SIGNAL(readyRead()), this, SLOT(readMessage()));
+    /// 当连接出现错误，则再次显示登陆界面
+    void(QAbstractSocket::*ptr)(QAbstractSocket::SocketError) = &QAbstractSocket::error;
+    connect(this->m_tcpSocket, ptr, this, &IMLoginCtrl::ReturnSocketError);
+
+    connect(m_tcpSocket, &IMTcpSocket::connected, this, &IMLoginCtrl::sendRequest);
+    connect(m_tcpSocket, &IMTcpSocket::readyRead, this, &IMLoginCtrl::readMessage);
 }
 
 IMLoginCtrl::~IMLoginCtrl()
 {
+    if (nullptr != m_tcpSocket)
+    {
+        delete m_tcpSocket;
+        m_tcpSocket = nullptr;
+    }
 }
 
 
@@ -51,7 +60,7 @@ void IMLoginCtrl::login(const QString &id, const QString &pwd, const int status)
     }
     else
     {
-        m_blockSize = 0;
+        qDebug() << "m_tcpSocket->ConnectToHost();";
         m_tcpSocket->ConnectToHost();
     }
 }
@@ -70,7 +79,6 @@ void IMLoginCtrl::getQuestionAndAnswer(const QString & id)
     }
     else
     {
-        m_blockSize = 0;
         m_tcpSocket->ConnectToHost();
     }
 }
@@ -83,10 +91,10 @@ Input： const QString &mes： 信息, bool isLogin：状态
 Output： nullptr
 Changes： nullptr
 *************************************************/
-void IMLoginCtrl::changeLoginMessage(const QString &mes, bool isLogin)
-{
-    emit getLoginMessgae(mes, isLogin);
-}
+//void IMLoginCtrl::changeLoginMessage(const QString &mes, bool isLogin)
+//{
+//    emit getLoginMessgae(mes, isLogin);
+//}
 
 // mark: private slots:--------------------------------------------------
 
@@ -99,7 +107,7 @@ Changes： nullptr
 *************************************************/
 void IMLoginCtrl::requestLogin()
 {
-    if (nullptrptr == m_tcpSocket)
+    if (nullptr == m_tcpSocket)
         return;
 
     QJsonObject json;
@@ -147,7 +155,7 @@ Description: 发送获取密保问题以及答案的请求
 *************************************************/
 void IMLoginCtrl::requestGetQuestionAndAnswer()
 {
-    if (nullptrptr == m_tcpSocket)
+    if (nullptr == m_tcpSocket)
         return;
 
     QJsonObject json;
@@ -171,9 +179,6 @@ Changes： nullptr
 *************************************************/
 void IMLoginCtrl::readMessage()
 {
-
-
-
     QByteArray result= m_tcpSocket->readAll();
     QJsonParseError json_error;
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
@@ -183,69 +188,73 @@ void IMLoginCtrl::readMessage()
     switch (type)
     {
     case LOGIN_SUCCESS:
-
-
         m_myself.m_regDateTime = json.value("registerDate").toString();
         m_myself.m_nickname = json.value("nickname").toString();
-        json.value("gender");
-        json.value("head");
+        m_myself.m_gender = json.value("gender").toString();
+        m_myself.m_headPortrait = json.value("head").toInt();
         emit getLoginMessgae(tr("登录成功"), true, &m_myself);
         break;
-    case LOGIN_FAIL:
+    case LOGIN_FAILED:
         emit getLoginMessgae(tr("登录失败.帐号或者密码错误."),false);
         break;
     case HAVE_LOGINED:
         emit getLoginMessgae(tr("登录失败.该用户已经登录."),false);
         break;
+        /*
 //    case GET_QUESTION_ANSWER_FAIL:
 //    {
 //        QMessageBox::critical(nullptr, tr("找回密码"), tr("失败，帐号不存在！"));
 //        break;
 //    }
 //    case GET_QUESTION_ANSWER_SUCCESS:
-    {
-        in >> m_tempStr;
-        emit getQuestionAndAnswerSuccess(m_tempStr);
+//    {
+//        in >> m_tempStr;
+//        emit getQuestionAndAnswerSuccess(m_tempStr);
 
-        while (1)
-        {
-            bool isOkMes = false;
-            QString str = QString(tr("密保问题:%1\n请输入问题答案:"))
-                    .arg(m_tempStr.m_two);
-            QString answer = QInputDialog::getText(nullptr, "找回密码",
-                                                   str,
-                                                   QLineEdit::Normal,
-                                                   nullptr,
-                                                   &isOkMes);
-            if (!isOkMes)
-                break;
-            if (answer != m_tempStr.m_three)
-            {
-                str = QString(tr("回答错误!"));
-                QMessageBox::critical(nullptr, tr("找回密码"), str);
-                continue;
-            }
-            else
-            {
-                str = QString(tr("回答正确!\n您的帐号是:%1\n您的密码是:%2"))
-                        .arg(m_id)
-                        .arg(IMEncryption::getInstace()
-                             .getXorEncryptDecrypt(m_tempStr.m_one, 10));
-                QMessageBox::information(nullptr, tr("找回密码"), str);
-            }
-            break;
-        }
-        break;
+//        while (1)
+//        {
+//            bool isOkMes = false;
+//            QString str = QString(tr("密保问题:%1\n请输入问题答案:"))
+//                    .arg(m_tempStr.m_two);
+//            QString answer = QInputDialog::getText(nullptr, "找回密码",
+//                                                   str,
+//                                                   QLineEdit::Normal,
+//                                                   nullptr,
+//                                                   &isOkMes);
+//            if (!isOkMes)
+//                break;
+//            if (answer != m_tempStr.m_three)
+//            {
+//                str = QString(tr("回答错误!"));
+//                QMessageBox::critical(nullptr, tr("找回密码"), str);
+//                continue;
+//            }
+//            else
+//            {
+//                str = QString(tr("回答正确!\n您的帐号是:%1\n您的密码是:%2"))
+//                        .arg(m_id)
+//                        .arg(IMEncryption::getInstace()
+//                             .getXorEncryptDecrypt(m_tempStr.m_one, 10));
+//                QMessageBox::information(nullptr, tr("找回密码"), str);
+//            }
+//            break;
+//        }
+//        break;
 
-    }
+//    }*/
     default:
         break;
     }
-
-    QByteArray data = m_tcpSocket->readAll();
-    qDebug() << "leaved in socket: " << data.size();
-    m_blockSize = 0;
 }
 
-// mark: private----------------------------------------------------------
-
+void IMLoginCtrl::ReturnSocketError(QAbstractSocket::SocketError error)
+{
+    QString strError = "neterror";
+    strError += m_tcpSocket->errorString();
+    qDebug() << strError;
+    emit getLoginMessgae(strError,false);
+}
+void IMLoginCtrl::AbortConnect()
+{
+    this->m_tcpSocket->abort();
+}

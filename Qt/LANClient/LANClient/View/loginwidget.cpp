@@ -30,6 +30,8 @@ void LoginWidget::init()
     setFixedSize(400,350);
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
+    m_loginCtrl = new IMLoginCtrl(this);
+    connect(m_loginCtrl, &IMLoginCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin);
     /***********************开始界面布局*****************************************/
     /***********************top*****************************************/
     m_closeLab = new CustomLabel;
@@ -121,7 +123,7 @@ void LoginWidget::init()
 
 void LoginWidget::RegisterUiChange(bool input)
 {
-    /// 登陆中
+    /// 登陆中...转圈圈
     if(true == input)
     {
         m_loginBtn->setText(tr("取消"));
@@ -140,6 +142,7 @@ void LoginWidget::RegisterUiChange(bool input)
     /// 取消登陆
     else
     {
+        m_loginCtrl->AbortConnect();
         m_loginBtn->setText(tr("登陆"));
         m_setBtn->show();
         m_IDLine->show();
@@ -152,6 +155,10 @@ void LoginWidget::RegisterUiChange(bool input)
 
 void LoginWidget::showExtend(bool pram)
 {
+    if(pram)
+        qDebug() << "true";
+    else
+        qDebug() << "false";
     if(true == pram)
     {
         m_extendWidget->show();
@@ -182,11 +189,18 @@ void LoginWidget::ClickLogin(bool pram)
             return;
         }
         RegisterUiChange(true);
-        //向登录控制类传递登录数据，具体的请求在控制类里处理，待实现
-        m_loginCtrl = new IMLoginCtrl(this);
+        /// 向登录控制类传递登录数据，具体的请求在控制类里处理，待实现
+        if (m_loginCtrl == NULL)
+        {
+            m_loginCtrl = new IMLoginCtrl(this);
+        }
+        m_loginCtrl->login(ID, pwd);
+        connect(m_loginCtrl, &IMLoginCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin);
     }
     else
     {
+        /// 断开连接
+        //m_loginCtrl->AbortConnect();
         RegisterUiChange(false);
         isLogin = false;
     }
@@ -195,32 +209,6 @@ void LoginWidget::ClickLogin(bool pram)
 void LoginWidget::ClickClose()
 {
     this->close();
-}
-
-
-
-void LoginWidget::mousePressEvent(QMouseEvent *event)
-{
-    if(event->button() == Qt::LeftButton)
-    {
-        m_tempPoint = event->globalPos() - this->frameGeometry().topLeft();
-    }
-    else
-    {
-        return mousePressEvent(event);
-    }
-}
-
-void LoginWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    if(event->buttons() == Qt::LeftButton)
-    {
-        move(event->globalPos() - m_tempPoint);
-    }
-    else
-    {
-        return mousePressEvent(event);
-    }
 }
 
 void LoginWidget::setServer(const QString &ip, const quint16 port)
@@ -245,4 +233,51 @@ void LoginWidget::setServer(const QString &ip, const quint16 port)
 
     IMTcpSocket::m_hostAddress = QHostAddress(tempAddr);
     IMTcpSocket::m_hostPort = tempPort;
+}
+
+void LoginWidget::HandleLogin(const QString & strRet, bool isLogin, const UserInfor* loginInfo)
+{
+    /// 成功登陆
+    if (isLogin == true)
+    {
+        this->close();
+        QLabel *tempLable = new QLabel(loginInfo->m_userID);
+        tempLable->move(500,500);
+        tempLable->show();
+    }
+    /// 避免反复提示
+    else if( strRet.contains("neterror") )
+    {
+        RegisterUiChange(false);
+    }
+    else
+    {
+        QMessageBox::about( this, tr("提示"), strRet );
+        /// 切回输入账号密码界面
+        RegisterUiChange(false);
+    }
+}
+
+void LoginWidget::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+    {
+        m_tempPoint = event->globalPos() - this->frameGeometry().topLeft();
+    }
+    else
+    {
+        return mousePressEvent(event);
+    }
+}
+
+void LoginWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if(event->buttons() == Qt::LeftButton)
+    {
+        move(event->globalPos() - m_tempPoint);
+    }
+    else
+    {
+        return mousePressEvent(event);
+    }
 }

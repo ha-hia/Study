@@ -152,10 +152,10 @@ void IMRegisterUi::on_registerBtn_clicked()
 
 }
 
-void IMRegisterUi::RegisterFailed()
-{
-    this->close();
-}
+//void IMRegisterUi::RegisterFailed()
+//{
+//    this->close();
+//}
 
 void IMRegisterUi::ShowReturnInfo(QString& res)
 {
