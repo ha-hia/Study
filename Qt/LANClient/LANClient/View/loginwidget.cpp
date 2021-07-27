@@ -18,6 +18,7 @@ LoginWidget::LoginWidget(QWidget *parent)
     connect(this->m_closeLab, &CustomLabel::clicked, this, &LoginWidget::ClickClose);
     connect(this->m_register, &CustomLabel::clicked, this, &LoginWidget::ClickRegister);
     connect(this->m_loginBtn, &QPushButton::toggled, this, &LoginWidget::ClickLogin);
+    connect(m_loginCtrl, &IMLoginCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin);
 }
 
 LoginWidget::~LoginWidget()
@@ -31,7 +32,6 @@ void LoginWidget::init()
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
     m_loginCtrl = new IMLoginCtrl(this);
-    connect(m_loginCtrl, &IMLoginCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin);
     /***********************开始界面布局*****************************************/
     /***********************top*****************************************/
     m_closeLab = new CustomLabel;
@@ -190,12 +190,12 @@ void LoginWidget::ClickLogin(bool pram)
         }
         RegisterUiChange(true);
         /// 向登录控制类传递登录数据，具体的请求在控制类里处理，待实现
-        if (m_loginCtrl == NULL)
+        if (m_loginCtrl == nullptr)
         {
             m_loginCtrl = new IMLoginCtrl(this);
         }
         m_loginCtrl->login(ID, pwd);
-        connect(m_loginCtrl, &IMLoginCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin);
+
     }
     else
     {
@@ -240,10 +240,11 @@ void LoginWidget::HandleLogin(const QString & strRet, bool isLogin, const UserIn
     /// 成功登陆
     if (isLogin == true)
     {
+        /// 关闭登陆界面
         this->close();
-        QLabel *tempLable = new QLabel(loginInfo->m_userID);
-        tempLable->move(500,500);
-        tempLable->show();
+
+        /// 显示主界面
+
     }
     /// 避免反复提示
     else if( strRet.contains("neterror") )

@@ -18,6 +18,7 @@ void IMTcpSocket::LinkSlotAndSignal()
     /// 信号重载，使用函数指针指定
     void(QAbstractSocket::*ptr)(QAbstractSocket::SocketError) = &QAbstractSocket::error;
     connect(this, ptr, this, &IMTcpSocket::ShowSocketError);
+    connect(this, &IMTcpSocket::disconnected, this, &IMTcpSocket::Disconnect);
 
 
 //    connect(this, static_cast<void(QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
@@ -39,6 +40,11 @@ void IMTcpSocket::LinkSuccess()
 {
     qDebug() << __FILE__ << "," << __LINE__ << "LinkSuccess";
     m_isConnected = true;
+}
+void IMTcpSocket::Disconnect()
+{
+    qDebug() << __FILE__ << "," << __LINE__ << "disconnect";
+    m_isConnected = false;
 }
 
 bool IMTcpSocket::isConnected()
@@ -84,7 +90,7 @@ void IMTcpSocket::ShowSocketError(QAbstractSocket::SocketError error)
     default:
         //emit showConnectionStatus(tr("链接失败: %1.").arg(errorString()));
         QMessageBox::information(nullptr, tr("IM Client"),
-                                 tr("The following errot occurred: %1.")
+                                 tr("The following error occurred: %1.")
                                  .arg(errorString()));
     }
 }

@@ -90,7 +90,7 @@ void IMRegisterCtrl::RegisterResult()
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
     QJsonObject json = document.object();
 
-    int type = json.value("type").toInt();
+    int type = json.value("type").toString().toInt();
     switch (type) {
         case REGISTER_FAILED:
         {

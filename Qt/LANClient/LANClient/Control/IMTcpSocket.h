@@ -14,17 +14,13 @@ class IMTcpSocket : public QTcpSocket
 {
     Q_OBJECT
 public:
-//    static IMTcpSocket* GetInstance(void)
-//    {
-//        static IMTcpSocket instance;
-//        return &instance;
-//    }
 
     static QHostAddress m_hostAddress;
     static uint16_t m_hostPort;
 
     void ConnectToHost();
     void LinkSuccess();
+    void Disconnect();
     bool isConnected();
     bool isError();
     void ShowSocketError(QAbstractSocket::SocketError error);
@@ -39,9 +35,6 @@ private:
     bool m_isError;
 private:
     void LinkSlotAndSignal(void);
-
-//    IMTcpSocket(const IMTcpSocket&);
-//    IMTcpSocket& operator =(const IMTcpSocket&);
 
 signals:
 

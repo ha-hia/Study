@@ -182,68 +182,79 @@ void IMLoginCtrl::readMessage()
     QByteArray result= m_tcpSocket->readAll();
     QJsonParseError json_error;
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
-    QJsonObject json = document.object();
-
-    int type = json.value("type").toInt();
-    switch (type)
+    if (json_error.error == QJsonParseError::NoError)
     {
-    case LOGIN_SUCCESS:
-        m_myself.m_regDateTime = json.value("registerDate").toString();
-        m_myself.m_nickname = json.value("nickname").toString();
-        m_myself.m_gender = json.value("gender").toString();
-        m_myself.m_headPortrait = json.value("head").toInt();
-        emit getLoginMessgae(tr("登录成功"), true, &m_myself);
-        break;
-    case LOGIN_FAILED:
-        emit getLoginMessgae(tr("登录失败.帐号或者密码错误."),false);
-        break;
-    case HAVE_LOGINED:
-        emit getLoginMessgae(tr("登录失败.该用户已经登录."),false);
-        break;
-        /*
-//    case GET_QUESTION_ANSWER_FAIL:
-//    {
-//        QMessageBox::critical(nullptr, tr("找回密码"), tr("失败，帐号不存在！"));
-//        break;
-//    }
-//    case GET_QUESTION_ANSWER_SUCCESS:
-//    {
-//        in >> m_tempStr;
-//        emit getQuestionAndAnswerSuccess(m_tempStr);
+        QJsonObject json = document.object();
 
-//        while (1)
-//        {
-//            bool isOkMes = false;
-//            QString str = QString(tr("密保问题:%1\n请输入问题答案:"))
-//                    .arg(m_tempStr.m_two);
-//            QString answer = QInputDialog::getText(nullptr, "找回密码",
-//                                                   str,
-//                                                   QLineEdit::Normal,
-//                                                   nullptr,
-//                                                   &isOkMes);
-//            if (!isOkMes)
-//                break;
-//            if (answer != m_tempStr.m_three)
-//            {
-//                str = QString(tr("回答错误!"));
-//                QMessageBox::critical(nullptr, tr("找回密码"), str);
-//                continue;
-//            }
-//            else
-//            {
-//                str = QString(tr("回答正确!\n您的帐号是:%1\n您的密码是:%2"))
-//                        .arg(m_id)
-//                        .arg(IMEncryption::getInstace()
-//                             .getXorEncryptDecrypt(m_tempStr.m_one, 10));
-//                QMessageBox::information(nullptr, tr("找回密码"), str);
-//            }
-//            break;
-//        }
-//        break;
+        int type = json.value("type").toString().toInt();
+        qDebug() << type;
+        switch (type)
+        {
+        case LOGIN_SUCCESS:
+            m_myself.m_regDateTime = json.value("registerDate").toString();
+            m_myself.m_nickname = json.value("nickname").toString();
+            m_myself.m_gender = json.value("gender").toString();
+            m_myself.m_headPortrait = json.value("head").toString().toInt();
+            m_myself.m_userID = m_loginInfo.m_userID;
+            m_myself.m_password = m_loginInfo.m_password;
+            m_myself.m_status = m_loginInfo. m_status;
+            emit getLoginMessgae(tr("登录成功"), true, &m_myself);
+            break;
+        case LOGIN_FAILED:
+            emit getLoginMessgae(tr("登录失败.帐号或者密码错误."),false);
+            break;
+        case HAVE_LOGINED:
+            emit getLoginMessgae(tr("登录失败.该用户已经登录."),false);
+            break;
+            /*
+    //    case GET_QUESTION_ANSWER_FAIL:
+    //    {
+    //        QMessageBox::critical(nullptr, tr("找回密码"), tr("失败，帐号不存在！"));
+    //        break;
+    //    }
+    //    case GET_QUESTION_ANSWER_SUCCESS:
+    //    {
+    //        in >> m_tempStr;
+    //        emit getQuestionAndAnswerSuccess(m_tempStr);
 
-//    }*/
-    default:
-        break;
+    //        while (1)
+    //        {
+    //            bool isOkMes = false;
+    //            QString str = QString(tr("密保问题:%1\n请输入问题答案:"))
+    //                    .arg(m_tempStr.m_two);
+    //            QString answer = QInputDialog::getText(nullptr, "找回密码",
+    //                                                   str,
+    //                                                   QLineEdit::Normal,
+    //                                                   nullptr,
+    //                                                   &isOkMes);
+    //            if (!isOkMes)
+    //                break;
+    //            if (answer != m_tempStr.m_three)
+    //            {
+    //                str = QString(tr("回答错误!"));
+    //                QMessageBox::critical(nullptr, tr("找回密码"), str);
+    //                continue;
+    //            }
+    //            else
+    //            {
+    //                str = QString(tr("回答正确!\n您的帐号是:%1\n您的密码是:%2"))
+    //                        .arg(m_id)
+    //                        .arg(IMEncryption::getInstace()
+    //                             .getXorEncryptDecrypt(m_tempStr.m_one, 10));
+    //                QMessageBox::information(nullptr, tr("找回密码"), str);
+    //            }
+    //            break;
+    //        }
+    //        break;
+
+    //    }*/
+        default:
+            emit getLoginMessgae(tr("暂未开发，敬请期待！"),false);
+            break;
+        }
+    }
+    else {
+        qDebug() << json_error.errorString();
     }
 }
 

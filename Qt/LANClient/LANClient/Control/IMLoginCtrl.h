@@ -23,7 +23,7 @@ class IMLoginCtrl : public QObject
 {
     Q_OBJECT
 public:
-    explicit IMLoginCtrl(QObject *parent = 0);
+    explicit IMLoginCtrl(QObject *parent = nullptr);
 
     ~IMLoginCtrl();
 
@@ -36,7 +36,7 @@ public:
     void AbortConnect();
 
 signals:
-    void getLoginMessgae(const QString &, bool isLogin = false, const UserInfor * me = 0);
+    void getLoginMessgae(const QString &, bool isLogin = false, const UserInfor * me = nullptr);
     void getQuestionAndAnswerSuccess(const TempStrings & tmpStr);
 
 public slots:

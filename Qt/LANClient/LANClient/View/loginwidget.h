@@ -1,8 +1,8 @@
 #ifndef LOGINWIDGET_H
 #define LOGINWIDGET_H
 
-#include "control/IMConstant.h"
-#include "control/IMLoginCtrl.h"
+#include "Control/IMConstant.h"
+#include "Control/IMLoginCtrl.h"
 #include "View/IMRegisterUi.h"
 #include "CustomLabel.h"
 #include <QWidget>
@@ -17,7 +17,7 @@ class LoginWidget : public QWidget
     Q_OBJECT
 
 public:
-    LoginWidget(QWidget *parent = 0);
+    LoginWidget(QWidget *parent = nullptr);
     ~LoginWidget();
     //界面布局
     void init();
