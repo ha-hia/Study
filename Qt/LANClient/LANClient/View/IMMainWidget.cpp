@@ -83,7 +83,7 @@ bool copyFileToPath(QString sourceDir ,QString toDir, bool coverFileIfExist)
     return true;
 }
 
-IMMainWidget::IMMainWidget(const UserInfor me, QWidget *parent) :
+IMMainWidget::IMMainWidget(const UserInfor& me, QWidget *parent) :
     QWidget(parent), m_database(me.m_userID)
 {
     m_flag = 0;
@@ -2739,39 +2739,31 @@ void IMMainWidget::initIMMainWidget()
     m_mainCtrl = new IMMainCtrl(m_myself.m_userID);
 
     m_labelHead = new CustomLabel(this);
-    /*
-border: 2px solid green;
-     border-radius: 4px;
-     padding: 2px;
-     background-image: url(images/welcome.png);
-     */
+
     qDebug() << "m_headPortrait: " << m_myself.m_headPortrait;
     m_labelHead->setFixedSize(HEAD_BIG_SIZE,HEAD_BIG_SIZE);
-//    m_frameHead->setObjectName("headFrame");
-//    QString str = QString("QFrame#headFrame{border-image:url(resource/image/head/%1.bmp);}")
-//            .arg(QString::number(m_myself.m_headPortrait));
-//    m_frameHead->setStyleSheet(str);
-    QString str = QString("resource/image/head/%1.bmp").
-            arg(QString::number(m_myself.m_headPortrait));
+    QString str = QString(":/imageSrc/head/%1.bmp").arg(QString::number(m_myself.m_headPortrait));
     m_labelHead->setPixmap(QPixmap(str));
+
     m_cbStatus = new QComboBox(this);
-//    m_cbStatus->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-//    m_cbStatus->setStyleSheet("QComboBox{border: 0;font-size: 16px;}");
-//                              "QComboBox::drop-down{border-style:none;border:0px;width:40px}");
+    m_cbStatus->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     /*
-    ONLINE = 0,    // 在线
-    INVISIBLE = 1, // 隐身
-    BUSY = 2,      // 忙碌
-    LEAVE = 3,     // 离开
-    NOTDISTURB = 4,// 请勿打扰
+    OFFLINE = 0,    // 离线
+    ONLINE = 1,    // 在线
+    INVISIBLE = 2, // 隐身
+    BUSY = 3,      // 忙碌
+    LEAVE = 4,     // 离开
+    NOTDISTURB = 5,// 请勿打扰
     */
+    m_cbStatus->addItem("离线");
     m_cbStatus->addItem("在线");
     m_cbStatus->addItem("隐身");
     m_cbStatus->addItem("忙碌");
     m_cbStatus->addItem("离开");
     m_cbStatus->addItem("请勿打扰");
-    m_cbStatus->setCurrentIndex(m_myself.m_status);
+    /// m_status返回初始值1为离线
+    m_cbStatus->setCurrentIndex(m_myself.m_status - 1);
 
     // add item
     m_labelNickname = new QLabel(QString("%1\n%2")
@@ -2779,26 +2771,25 @@ border: 2px solid green;
     m_labelMark = new QLabel(tr("我的签名")); // 说说 签名
 
     m_toolBtnSpace = new QToolButton(this);  // 空间
-    m_toolBtnSpace->setIcon(QIcon(":/images/space.png"));
+    m_toolBtnSpace->setIcon(QIcon(":/imageSrc/Pic/space.png"));
     m_toolBtnSpace->setAutoRaise(true);
     m_toolBtnSpace->setToolTip(tr("空间"));
     m_toolBtnSpace->setStatusTip(tr("打开空间"));
 
-//    m_toolBtnSpace->setAutoFillBackground(true);
     m_toolBtnMail = new QToolButton(this);   // 邮件
-    m_toolBtnMail->setIcon(QIcon(":/images/mail.png"));
+    m_toolBtnMail->setIcon(QIcon(":/imageSrc/Pic/mail.png"));
     m_toolBtnMail->setAutoRaise(true);
     m_toolBtnMail->setToolTip(tr("邮箱"));
     m_toolBtnMail->setStatusTip(tr("打开邮箱"));
 
     m_toolBtnMesBox = new QToolButton(this); // 消息盒子
-    m_toolBtnMesBox->setIcon(QIcon(":/images/messageBox.png"));
+    m_toolBtnMesBox->setIcon(QIcon(":/imageSrc/Pic/messageBox.png"));
     m_toolBtnMesBox->setAutoRaise(true);
     m_toolBtnMesBox->setToolTip(tr("消息管理"));
     m_toolBtnMesBox->setStatusTip(tr("打开消息管理器"));
 
     m_toolBtnNewMes = new QToolButton(this);
-    m_toolBtnNewMes->setIcon(QIcon(""));//:/images/noMessage.png"));
+    m_toolBtnNewMes->setIcon(QIcon(":/imageSrc/Pic/noMessage.png"));
     m_toolBtnNewMes->setAutoRaise(true);
     m_toolBtnNewMes->setToolTip(tr("无新消息"));
     m_toolBtnNewMes->setStatusTip(tr("无最新消息"));
@@ -2817,17 +2808,9 @@ border: 2px solid green;
     m_leSearch->setPlaceholderText(tr("search friends"));
 
     m_toolBtnSearch = new QToolButton();
-    m_toolBtnSearch->setIcon(QIcon(":/images/search.png"));
+    m_toolBtnSearch->setIcon(QIcon(":/imageSrc/Pic/search.png"));
     m_toolBtnSearch->setStyleSheet("border: 0px;");
     m_toolBtnSearch->setEnabled(false);
-//    m_labelSearch = new QLabel(this);
-//    m_labelSearch->setStyleSheet("border: 0px;");
-
-//    QPixmap pixmap;
-//    QIcon icon(QString(":/images/search.png"));
-//    pixmap = icon.pixmap(QSize(CHAT_WIDGET_TOOL_SMALL_SIZE,
-//                               CHAT_WIDGET_TOOL_SMALL_SIZE));
-//    m_labelSearch->setPixmap(pixmap);
 
     QHBoxLayout *layoutTopSearch = new QHBoxLayout;
     layoutTopSearch->setContentsMargins(0, 0, 0, 0);

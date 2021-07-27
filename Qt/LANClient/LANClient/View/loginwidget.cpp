@@ -1,5 +1,6 @@
 
 #include "loginwidget.h"
+#include "IMMainWidget.h"
 #include "Control/IMTcpSocket.h"
 
 #include <QString>
@@ -244,7 +245,9 @@ void LoginWidget::HandleLogin(const QString & strRet, bool isLogin, const UserIn
         this->close();
 
         /// 显示主界面
-
+        IMMainWidget *mainWidget = new IMMainWidget(*loginInfo);
+        mainWidget->getFriendsInformation();
+        mainWidget->show();
     }
     /// 避免反复提示
     else if( strRet.contains("neterror") )

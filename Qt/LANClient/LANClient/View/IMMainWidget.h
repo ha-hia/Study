@@ -58,7 +58,7 @@ class IMMainWidget : public QWidget
 {
     Q_OBJECT
 public:
-    IMMainWidget( const UserInfor me, QWidget *parent = nullptr);
+    IMMainWidget( const UserInfor& me, QWidget *parent = nullptr);
     ~IMMainWidget();
 
     IMMainCtrl * getMainCtrl() const
