@@ -1089,8 +1089,14 @@ void IMMainCtrl::readMessage()
         return;
 
     QByteArray result= m_tcpSocket->readAll();
+    m_tcpSocket->flush();
+    qDebug() << "get result : " << QString(result);
     QJsonParseError json_error;
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
+    if(json_error.error == QJsonParseError::NoError)
+    {
+        qDebug() << "解析失败!!!!!!!!!!!!!!!!!!";
+    }
 
     m_json = document.object();
     if(m_packSize == 0)
