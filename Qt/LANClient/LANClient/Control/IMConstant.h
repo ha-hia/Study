@@ -188,8 +188,8 @@ enum MessageType
     HAVE_LOGINED,                /// 重复登陆
     LOGIN_FAILED,               /// 登陆失败
     LOGIN_SUCCESS,               /// 登陆成功
-    GETFRIENDINFO_SUCCESS,      /// 获取好友信息成功
-    GETFRIENDINFO_FAILED,      /// 获取好友信息失败
+    GET_ALL_FRIENDS_SUCCESS,      /// 获取好友信息成功
+    GET_ALL_FRIENDS_FAIL,       // 获取所有好友信息失败
     GETFRIENDINFO_NONE,        /// 获取好友信息,没有好友
     CHANGE_STATUE,			   /// 改变自身状态
     ADDFRIEND_AGREE,		   /// 同意加好友
@@ -209,9 +209,6 @@ enum MessageType
     MOVE_FRIEND_BOX_SUCCESS,
     MOVE_FRIEND_BOX_FAIL,
 
-
-    GET_ALL_FRIENDS_SUCCESS,    // 获取所有好友信息成功
-    GET_ALL_FRIENDS_FAIL,       // 获取所有好友信息失败
     NO_FRIEND,                  // 没有好友
     GET_ALL_FLOCKS_SUCCESS,     // 获取所有群信息成功
     GET_ALL_FLOCKS_FAIL,        // 获取所有群信息失败

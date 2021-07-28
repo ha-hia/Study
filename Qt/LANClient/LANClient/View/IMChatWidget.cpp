@@ -44,7 +44,7 @@ IMChatWidget::IMChatWidget(const ChatInformation &chatInf, QWidget *parent) :
     initIMChatWidget();
     setLabelStatus();
     linkSignalWithSlot();
-    setWindowTitle(tr("IM好友聊天窗口"));
+    setWindowTitle(tr("好友聊天窗口"));
 }
 
 //IMChatWidget::IMChatWidget(const QString &id, QWidget *parent) :

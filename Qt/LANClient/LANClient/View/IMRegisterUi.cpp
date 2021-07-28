@@ -15,7 +15,7 @@ IMRegisterUi::IMRegisterUi(QWidget *parent) :
     ui(new Ui::IMRegisterUi)
 {
     ui->setupUi(this);
-    this->setWindowTitle(tr("注册IM帐号"));
+    this->setWindowTitle(tr("注册帐号"));
     this->setAttribute(Qt::WA_DeleteOnClose);
     this->setFixedSize(500, 390);
 

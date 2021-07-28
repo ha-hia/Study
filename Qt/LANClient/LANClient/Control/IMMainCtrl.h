@@ -12,6 +12,10 @@ Changes：
 #include <QMultiMap>
 #include "IMConstant.h"
 #include <QVector>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonParseError>
+#include <QJsonArray>
 
 
 class IMTcpSocket;
@@ -227,6 +231,15 @@ private:
 
     IMTcpSocket *m_tcpSocket;
     quint16 m_blockSize;
+    /// 接收数据报的字节个数，
+    /// 接收完整后即 m_recvSize == m_packSize 时一定要置0，会影响 m_type 的类型处理
+    int m_recvSize;
+    /// 接下来数据报会发送的总字节数
+    int m_packSize;
+    /// 保存接收到的数据
+    QByteArray m_recvData;
+    /// 请求类型
+    int m_type;
     QString m_id;
     int m_status;
     int m_peerStatus;
@@ -262,6 +275,14 @@ private:
     QString m_title;
     QString m_newTitle;
     QDate m_date;
+
+
+    /*******************************/
+    QJsonObject m_json;
+    /// 大数据传输时，忽略第一次接收到的包长度信息的Json信息提取
+    bool m_ignoreFirstPack;
+    /// 获取好友信息成功时接收好友信息
+    void HandleGetAllFriendsSuccess(const QByteArray& result, bool ignoreFirstPack = true);
 
 };
 

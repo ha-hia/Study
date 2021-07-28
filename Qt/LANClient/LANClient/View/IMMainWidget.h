@@ -389,7 +389,7 @@ private:
 
     QLabel *m_labelOnlineNum;
     QToolButton *m_toolBtnAddFlock;
-//    QToolButton *m_toolBtnAddDiscussion;
+    QToolButton *m_toolBtnAddDiscussion;
     QToolButton *m_toolBtnAddFriend;
 //    QToolButton *m_toolBtnSearchAdd;
     QToolButton *m_toolBtnConfig;

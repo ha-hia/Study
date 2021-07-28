@@ -10,7 +10,10 @@ IMSearchListWidget::IMSearchListWidget(QWidget *parent) :
     QWidget(parent),  m_layout(new QVBoxLayout)
 {
     if (nullptr == m_mainWidget)
+    {
         return;
+    }
+
     QVBoxLayout *mainLayout=new QVBoxLayout();
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->setSpacing(0);

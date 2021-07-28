@@ -95,7 +95,7 @@ IMMainWidget::IMMainWidget(const UserInfor& me, QWidget *parent) :
     initIMMainWidget();
     linkSignalWithSlot();
     creatMenu();
-    setWindowTitle(tr("IM"));
+    setWindowTitle(tr("Happy Chats"));
 }
 
 IMMainWidget::~IMMainWidget()
@@ -2805,26 +2805,22 @@ void IMMainWidget::initIMMainWidget()
 
     m_leSearch = new QLineEdit();
     m_leSearch->setStyleSheet("border: 0px;");
-    m_leSearch->setPlaceholderText(tr("search friends"));
+    m_leSearch->setPlaceholderText(tr("好友列表搜索好友"));
 
     m_toolBtnSearch = new QToolButton();
     m_toolBtnSearch->setIcon(QIcon(":/imageSrc/Pic/search.png"));
     m_toolBtnSearch->setStyleSheet("border: 0px;");
+    m_toolBtnSearch->setToolTip(tr("搜索好友"));
+    m_toolBtnSearch->setStatusTip(tr("好友列表搜索好友"));
+    m_toolBtnSearch->setAutoRaise(true);
     m_toolBtnSearch->setEnabled(false);
 
     QHBoxLayout *layoutTopSearch = new QHBoxLayout;
     layoutTopSearch->setContentsMargins(0, 0, 0, 0);
     layoutTopSearch->addWidget(m_leSearch);
     layoutTopSearch->addWidget(m_toolBtnSearch);
-//    layoutTopSearch->addWidget(m_labelSearch);
 //    layoutTopSearch->addSpacing(2);
     searchLabel->setLayout(layoutTopSearch);
-
-//    m_toolBtnSearch = new QToolButton();
-//    m_toolBtnSearch->setIcon(QIcon(":/images/search.png"));
-//    m_toolBtnSearch->setAutoRaise(true);
-//    m_toolBtnSearch->setToolTip(tr("搜索好友"));
-//    m_toolBtnSearch->setStatusTip(tr("搜索好友"));
 
 //    m_toolBtnSearch->adjustSize();
 //    m_toolBtnSearch->setCursor(Qt::ArrowCursor);
@@ -2840,46 +2836,50 @@ void IMMainWidget::initIMMainWidget()
 //    m_discussionListWidget = new IMDiscussionListWidget(this, this);
     m_messageListWidget = new IMLatestMessageListWidget(this, this);
     m_tabWidget->addTab(m_friendListWidget, tr("联系人"));
-//    m_tabWidget->addTab(m_flockListWidget,tr("IM群"));
+    /***************待实现**************************/
+    QLabel flock("群");
+    QLabel discussion("讨论组");
+    m_tabWidget->addTab(&flock, tr("群"));
+    m_tabWidget->addTab(&discussion, tr("讨论组"));
+//    m_tabWidget->addTab(m_flockListWidget,tr("群"));
 //    m_tabWidget->addTab(m_discussionListWidget, tr("讨论组"));
-    m_tabWidget->addTab(m_messageListWidget, tr("新消息(0)"));
+    m_tabWidget->addTab(m_messageListWidget, tr("新消息"));
 
     m_labelOnlineNum = new QLabel("在线人数: 0");
     m_labelOnlineNum->setHidden(true);
 
     m_toolBtnAddFlock = new QToolButton;
-    m_toolBtnAddFlock->setIcon(QIcon(":/images/addFlock.png"));
+    m_toolBtnAddFlock->setIcon(QIcon(":/imageSrc/Pic/addFlock.png"));
     m_toolBtnAddFlock->setAutoRaise(true);
     m_toolBtnAddFlock->setToolTip(tr("加群"));
     m_toolBtnAddFlock->setStatusTip(tr("添加群"));
 
-//    m_toolBtnAddDiscussion = new QToolButton;
-//    m_toolBtnAddDiscussion->setIcon(QIcon(":/images/addDiscussion.png"));
-//    m_toolBtnAddDiscussion->setAutoRaise(true);
-//    m_toolBtnAddDiscussion->setToolTip(tr(""));
-//    m_toolBtnAddDiscussion->setStatusTip(tr(""));
+    m_toolBtnAddDiscussion = new QToolButton;
+    m_toolBtnAddDiscussion->setIcon(QIcon(":/imageSrc/Pic/addDiscussion.png"));
+    m_toolBtnAddDiscussion->setAutoRaise(true);
+    m_toolBtnAddDiscussion->setToolTip(tr("加讨论组"));
+    m_toolBtnAddDiscussion->setStatusTip(tr("添加讨论组"));
 
 //    m_toolBtnSearchAdd = new QToolButton;
-//    m_toolBtnSearchAdd->setIcon(QIcon(":/images/searchAdd.png"));
+//    m_toolBtnSearchAdd->setIcon(QIcon(":/imageSrc/Pic/searchAdd.png"));
 //    m_toolBtnSearchAdd->setAutoRaise(true);
 //    m_toolBtnSearchAdd->setToolTip(tr(""));
 //    m_toolBtnSearchAdd->setStatusTip(tr(""));
 
     m_toolBtnConfig = new QToolButton;
-    m_toolBtnConfig->setIcon(QIcon(":/images/config.png"));
+    m_toolBtnConfig->setIcon(QIcon(":/imageSrc/Pic/config.png"));
     m_toolBtnConfig->setAutoRaise(true);
     m_toolBtnConfig->setToolTip(tr("系统管理"));
     m_toolBtnConfig->setStatusTip(tr("打开系统管理"));
 
     m_toolBtnAddFriend = new QToolButton;
-    m_toolBtnAddFriend->setIcon(QIcon(":/images/addFriend.png"));
+    m_toolBtnAddFriend->setIcon(QIcon(":/imageSrc/Pic/addFriend.png"));
     m_toolBtnAddFriend->setAutoRaise(true);
     m_toolBtnAddFriend->setToolTip(tr("加好友"));
     m_toolBtnAddFriend->setStatusTip(tr("添加好友"));
 
     /****************头部*********/
     QVBoxLayout *layoutTopRight = new QVBoxLayout;
-//    layoutTopRight1->addWidget(m_cbStatus);
     layoutTopRight->addWidget(m_labelNickname);
 //    layoutTopRight->addWidget(m_labelMark);
 
@@ -2911,7 +2911,7 @@ void IMMainWidget::initIMMainWidget()
     layoutBtm->addWidget(m_labelOnlineNum);
     layoutBtm->addStretch();
     layoutBtm->addWidget(m_toolBtnAddFlock);
-//    layoutBtm->addWidget(m_toolBtnAddDiscussion);
+    layoutBtm->addWidget(m_toolBtnAddDiscussion);
     layoutBtm->addWidget(m_toolBtnAddFriend);
 //    layoutBtm->addWidget(m_toolBtnSearchAdd);
     layoutBtm->addWidget(m_toolBtnConfig);
@@ -3072,17 +3072,47 @@ void IMMainWidget:: creatMenu()
 {
     m_menu = new QMenu(this);
     QAction *addFriend = new QAction(tr("添加好友"), m_menu);
-//    QAction *addFlock = new QAction(tr("添加群"), m_menu);
-//    QAction *changePwd = new QAction(tr("修改密码"), m_menu);
-//    QAction *information = new QAction(tr("个人信息"), m_menu);
-//    QAction *manMes = new QAction(tr("消息管理"), m_menu);
-//    QAction *mail = new QAction(tr("邮件管理"), m_menu);
+    QAction *addFlock = new QAction(tr("添加群"), m_menu);
+    QAction *changePwd = new QAction(tr("修改密码"), m_menu);
+    QAction *information = new QAction(tr("个人信息"), m_menu);
+    QAction *manMes = new QAction(tr("消息管理"), m_menu);
+    QAction *mail = new QAction(tr("邮件管理"), m_menu);
 
     connect(addFriend, SIGNAL(triggered()),
             this, SLOT(onClickAddFriend()));
-/**暂时先不考虑*/
-//    connect(addFlock, SIGNAL(triggered()),
-//            this, SLOT(onClickAddFlock()));
+
+    connect(addFlock, &QAction::triggered,
+            []()
+            {
+                QMessageBox::information(nullptr, tr("添加群"),tr("没充钱，不开放！") );
+            }
+    );
+    connect(changePwd, &QAction::triggered,
+            []()
+            {
+                QMessageBox::information(nullptr, tr("修改密码"),tr("很忙，还没有开放！") );
+            }
+    );
+    connect(information, &QAction::triggered,
+            []()
+            {
+                QMessageBox::information(nullptr, tr("个人信息"),tr("很忙，还没有开放！") );
+            }
+    );
+    connect(manMes, &QAction::triggered,
+            []()
+            {
+                QMessageBox::information(nullptr, tr("消息管理"),tr("很忙，还没有开放！") );
+            }
+    );
+    connect(mail, &QAction::triggered,
+            []()
+            {
+                QMessageBox::information(nullptr, tr("邮件管理"),tr("很忙，还没有开放！") );
+            }
+    );
+
+//    connect(addFlock, SIGNAL(triggered()), this, SLOT(onClickAddFlock()));
 //    connect(changePwd, SIGNAL(triggered()),
 //            this, SLOT(onClickChangePwd()));
 //    connect(information, SIGNAL(triggered()),
@@ -3094,11 +3124,11 @@ void IMMainWidget:: creatMenu()
 
 
     m_menu->addAction(addFriend);
-//    m_menu->addAction(addFlock);
-//    m_menu->addAction(changePwd);
-//    m_menu->addAction(information);
-//    m_menu->addAction(manMes);
-//    m_menu->addAction(mail);
+    m_menu->addAction(addFlock);
+    m_menu->addAction(changePwd);
+    m_menu->addAction(information);
+    m_menu->addAction(manMes);
+    m_menu->addAction(mail);
 }
 
 
