@@ -95,7 +95,7 @@ IMMainWidget::IMMainWidget(const UserInfor& me, QWidget *parent) :
     initIMMainWidget();
     linkSignalWithSlot();
     creatMenu();
-    setWindowTitle(tr("Happy Chats"));
+    setWindowTitle(tr("Hi Chats"));
 }
 
 IMMainWidget::~IMMainWidget()
@@ -410,35 +410,7 @@ Description: 添加好友（发送至服务器）
 *************************************************/
 void IMMainWidget::addFriend(const QString friendID)
 {
-    if (0 == friendID.compare(m_myself.m_userID))
-    {
-        QMessageBox::critical(nullptr, tr("添加失败"), tr("不能添加自己"));
-        return;
-    }
-    if (m_friendMap.contains(friendID))
-    {
-        QMessageBox::critical(nullptr, tr("添加失败"), tr("该用户已经是您的好友"));
-        return;
-    }
-
-    bool isOkMes = false;
-    QString checkMes = QInputDialog::getText(nullptr, "添加好友",
-                                           "请输入验证信息",
-                                           QLineEdit::Normal,
-                                           QString(tr("你好,我是: %1")).
-                                             arg(m_myself.m_nickname),
-                                           &isOkMes);
-    if (!isOkMes)
-        return;
-
-    TalkMessage mes;
-    mes.m_senderID = m_myself.m_userID;
-    mes.m_receiverID = friendID;
-    mes.m_text = checkMes;
-    mes.m_type = REQUEST_FRIEND;
-
-    if (nullptr != m_mainCtrl)
-        m_mainCtrl->addFriend(mes);
+    /*1774*/
 }
 
 
@@ -469,6 +441,7 @@ void IMMainWidget::setOnlineCounter(int num)
     m_onlineCounter = num;
     m_labelOnlineNum->setText(QString(tr("在线人数: %1"))
                               .arg(QString::number(num)));
+    m_labelOnlineNum->show();
 
 }
 
@@ -893,31 +866,15 @@ Description: 设置好友列表
 *************************************************/
 void IMMainWidget::setFriendListWidget(const QVector<FriendInformation> &friendsVec)
 {
-//    return;
-//    #if 0
-//    clearContainers();
-
-//    if (!m_friendsGroupList.contains(GROUP_NAME_DEFAULT))
-//    {
-//        // 存储 新的分组号
-//        m_friendsGroupList.append(GROUP_NAME_DEFAULT);
-
-//        // 新建并存储分组
-//        IMToolBox *toolBox = new IMToolBox;
-//        IMToolItem *toolItem = new IMToolItem(GROUP_NAME_DEFAULT);
-//        m_toolItemsFriendsVec.push_back(toolItem);
-//        toolBox->addItem(toolItem);
-//        m_friendListWidget->addItem(toolBox);
-
-//        // 存储映射关系
-//        m_indexFriendsGroupMap.insert(GROUP_NAME_DEFAULT, m_toolItemsFriendsVec.size()-1);
-//    }
-
     int num = 0;
     int len = friendsVec.size();
     for(int i=0; i<len; i++)
     {
-        addFriendButton(friendsVec[i]);
+        bool ret = addFriendButton(friendsVec[i]);
+        if(ret == false)
+        {
+            continue;
+        }
         if (OFFLINE != friendsVec[i].m_status && INVISIBLE != friendsVec[i].m_status)
             num++;
     }
@@ -993,9 +950,7 @@ bool IMMainWidget::addFriendButton(const FriendInformation & friInfo)
         m_indexFriendsGroupMap.insert(groupName, m_toolItemsFriendsVec.size()-1);
     }
 
-    IMFriendButton *button = new IMFriendButton(friInfo,
-                                                &m_friendsGroupList,this, this);
-//    button->setAutoRaise(true);
+    IMFriendButton *button = new IMFriendButton(friInfo, &m_friendsGroupList, this, this);
     m_toolItemsFriendsVec[m_indexFriendsGroupMap.value(groupName)]->addItem(button);
     m_friendMap.insert(friInfo.m_userID, button);
     return true;
@@ -1310,7 +1265,7 @@ Description: 设置个人信息
 *************************************************/
 void IMMainWidget::setMyInformation(const UserInfor &user)
 {
-    QString str = QString("resource/image/head/%1.bmp").
+    QString str = QString(":/imageSrc/head/%1.bmp").
             arg(QString::number(user.m_headPortrait));
     m_labelHead->setPixmap(QPixmap(str));
 //    m_cbStatus->setCurrentIndex(user.m_status);
@@ -1785,10 +1740,36 @@ void IMMainWidget::onClickAddFriend()
     if (!isOk)
         return;
 
-    // mark
-    // 检验 是否全是 数字 或者 一开始就限制 或者 重写一个messagebox
+//    addFriend(friendID);
+    if (0 == friendID.compare(m_myself.m_userID))
+    {
+        QMessageBox::critical(nullptr, tr("添加失败"), tr("不能添加自己"));
+        return;
+    }
+    if (m_friendMap.contains(friendID))
+    {
+        QMessageBox::critical(nullptr, tr("添加失败"), tr("该用户已经是您的好友"));
+        return;
+    }
 
-    addFriend(friendID);
+    bool isOkMes = false;
+    QString checkMes = QInputDialog::getText(nullptr, "添加好友",
+                                           "请输入验证信息",
+                                           QLineEdit::Normal,
+                                           QString(tr("你好,我是: %1")).
+                                             arg(m_myself.m_nickname),
+                                           &isOkMes);
+    if (!isOkMes)
+        return;
+
+    TalkMessage mes;
+    mes.m_senderID = m_myself.m_userID;
+    mes.m_receiverID = friendID;
+    mes.m_text = checkMes;
+    mes.m_type = ADDFRIEND_REQUEST; //REQUEST_FRIEND;
+
+    if (nullptr != m_mainCtrl)
+        m_mainCtrl->addFriend(mes);
 }
 
 /*************************************************
@@ -2447,16 +2428,16 @@ void IMMainWidget::receiveFriendRequest(const TalkMessage & mes,
     {
         QMessageBox::StandardButton rb = QMessageBox::question(
                     nullptr, tr("好友请求"),
-                    QString(tr("是否同意用户%1(%2)添加你为好友?\n验证消息:\n%3")).
+                    QString(tr("是否同意用户%1 %2添加你为好友?\n验证消息:\n%3")).
                     arg(mes.m_senderID, friendInf.m_nickname, mes.m_text),
                     QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if(rb == QMessageBox::Yes)
         {
-            returnMes.m_type = AGREE_FRIEND;
+            returnMes.m_type = ADDFRIEND_AGREE;
         }
         else
         {
-            returnMes.m_type = REFUSE_FRIEND;
+            returnMes.m_type = ADDFRIEND_REFUSE;
         }
         returnMes.m_senderID = mes.m_receiverID;
         returnMes.m_receiverID = mes.m_senderID;

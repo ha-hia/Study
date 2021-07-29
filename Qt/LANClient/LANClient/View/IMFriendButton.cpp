@@ -20,15 +20,13 @@ IMFriendButton::IMFriendButton(const FriendInformation &info,
     m_isOpen = false;
     m_isShow = false;
 
-//    setAutoRaise(TRUE);
-
     QHBoxLayout *layout = new QHBoxLayout;
-//    m_iconHead = new QIcon;
+
     m_labelHead = new QLabel;
     m_labelHead->setFixedSize(HEAD_SMALL_SIZE, HEAD_SMALL_SIZE);
+
     m_labelMes = new QLabel;
-//    layout->addSpacing(1);
-//    layout->addWidget(m_iconHead);
+
     layout->addWidget(m_labelHead);
     layout->addWidget(m_labelMes);
     layout->addStretch();
@@ -40,12 +38,7 @@ IMFriendButton::IMFriendButton(const FriendInformation &info,
     m_moveFriendMenu = nullptr;
     m_groupList = groupList;
     setButtonStatus();
-
-//    connect(this, SIGNAL(clicked()), this, SLOT(onClickFriendButton()));
-//    connect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
-//        this, SLOT(onClickRightButton(const QPoint &)));
-
-    setStyleSheet("QPushButton{border: 0;}");
+//    setStyleSheet("QPushButton{border: 0;}");
 }
 
 
@@ -86,7 +79,7 @@ void IMFriendButton::openChatRoom()
     m_isOpen = true;
     IMChatWidget *chatRoom = new IMChatWidget(chatInf);
 
-//    QString str = QString("resource/image/head/%1.bmp").
+//    QString str = QString(":/imageSrc/head/%1.bmp").
 //        arg(QString::number(m_info.m_headPortrait));
 //    QIcon icon(str);
 //    chatRoom->setWindowIcon(icon);
@@ -132,15 +125,16 @@ Description:  设置button显示信息
 *************************************************/
 void IMFriendButton::setButtonStatus()
 {
-    QString str = QString("resource/image/head/%1.bmp").
-        arg(QString::number(m_info.m_headPortrait));
+    QString str = QString(":/imageSrc/head/%1.bmp").arg(QString::number(m_info.m_headPortrait));
 
     QString text, mark;
     m_strStatus = getStatusFromInt(m_info.m_status);
+
     if(m_info.m_remarkName.isEmpty())
         mark = m_info.m_nickname;
     else
         mark = m_info.m_remarkName;
+
     if(OFFLINE == m_info.m_status || INVISIBLE == m_info.m_status)
     {
         QPixmap pixmap;
@@ -213,12 +207,13 @@ Description: 右键 单击
 *************************************************/
 void IMFriendButton::onClickRightButton(/*const QPoint &*/)
 {
-    if (m_menu == nullptr)
-    {
-        //创建右键菜单
-        creatMenu();
-    }
-    m_menu->exec(QCursor::pos());
+    /// 待开放
+//    if (m_menu == nullptr)
+//    {
+//        //创建右键菜单
+//        creatMenu();
+//    }
+//    m_menu->exec(QCursor::pos());
 }
 
 /*************************************************

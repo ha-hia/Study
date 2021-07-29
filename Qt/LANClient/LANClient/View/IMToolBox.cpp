@@ -4,6 +4,11 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <QDebug>
+
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QMessageBox>
+
 // mark public:------------------------------------------------------
 IMToolItem::IMToolItem(const QString &title, QWidget *parent) :
     QWidget(parent), m_layout(new QVBoxLayout)
@@ -138,11 +143,32 @@ void IMToolItem:: creatMenu()
     m_menu = new QMenu(this);
     QAction *rename = new QAction(tr("重命名"), m_menu);
     QAction *remove = new QAction(tr("删除"), m_menu);
-
-    connect(rename, SIGNAL(triggered()),
-            this, SLOT(renameBox()));
-    connect(remove, SIGNAL(triggered()),
-            this, SLOT(removeBox()));
+    /// 待实现
+//    connect(rename, SIGNAL(triggered()),
+//            this, SLOT(renameBox()));
+//    connect(remove, SIGNAL(triggered()),
+//            this, SLOT(removeBox()));
+    connect(rename, &QAction::triggered,
+            [this]()
+            {
+                bool isOk = false;
+                QString newTitle = QInputDialog::getText(nullptr, "重命名分组",
+                                               "请输入新的分组名",
+                                               QLineEdit::Normal,
+                                               m_label->text(),
+                                               &isOk);
+                if(!isOk)
+                    return;
+                m_label->setText(newTitle);
+            }
+            );
+    connect(remove, &QAction::triggered,
+            [this]()
+            {
+                QMessageBox::about(this, tr("提示"), tr("暂未实现！"));
+                return;
+            }
+            );
 
     m_menu->addAction(rename);
     m_menu->addAction(remove);

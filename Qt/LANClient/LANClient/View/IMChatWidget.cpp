@@ -222,7 +222,7 @@ Description:  设置聊天窗口显示信息
 *************************************************/
 void IMChatWidget::setLabelStatus()
 {
-    QString str = QString("resource/image/head/%1.bmp").
+    QString str = QString(":/imageSrc/head/%1.bmp").
         arg(QString::number(m_chatInfor.m_headPortrait));
 
     QString  name;

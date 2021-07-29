@@ -407,7 +407,25 @@ void IMMainCtrl::resultOfFriendRequest(const TalkMessage & mes)
     if (nullptr == m_tcpSocket)
         return;
     if (m_tcpSocket->isConnected())
-        requestSendResultOfFriendRequest(mes);
+    {
+        if (nullptr == m_tcpSocket)
+            return;
+
+        QJsonObject json;
+        json.insert("type",ADDFRIEND);
+        json.insert("subType",ADDFRIEND_REPLY);
+        json.insert("reply",mes.m_type);// ADDFRIEND_AGREE,ADDFRIEND_REFUSE..
+        json.insert("senderID", mes.m_senderID);
+        json.insert("receiverID", mes.m_receiverID);
+
+        QJsonDocument document;
+        document.setObject(json);
+        QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+
+        m_tcpSocket->write(byte_array);
+        qDebug() << __FILE__ << " " << __LINE__ ;
+        qDebug() << "result Of FriendRequest " << byte_array;
+    }
 }
 
 
@@ -694,14 +712,21 @@ void IMMainCtrl::requestAddFriend(const TalkMessage & mes)
 {
     if (nullptr == m_tcpSocket)
         return;
-    m_blockSize = 0;
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_8);
-    out << quint16(0) << int(ADD_FRIEND) << mes;
-    out.device()->seek(0);
-    out << quint16(block.size() - sizeof(quint16));
-    m_tcpSocket->write(block);
+
+    QJsonObject json;
+    json.insert("type",ADDFRIEND);
+    json.insert("subType",mes.m_type);//ADDFRIEND_REQUEST
+    json.insert("senderID", mes.m_senderID);
+    json.insert("receiverID", mes.m_receiverID);
+    /// 验证消息
+    json.insert("verifyInfo", mes.m_text);
+
+    QJsonDocument document;
+    document.setObject(json);
+    QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+
+    m_tcpSocket->write(byte_array);
+    qDebug() << "request AddFriend  send: " << QString(byte_array);
 }
 
 /*************************************************
@@ -860,16 +885,7 @@ Description: 发送处理好友请求结果的请求
 *************************************************/
 void IMMainCtrl::requestSendResultOfFriendRequest(const TalkMessage & mes)
 {
-    if (nullptr == m_tcpSocket)
-        return;
-    m_blockSize = 0;
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_8);
-    out << quint16(0) << int(ADD_FRIEND) << mes;
-    out.device()->seek(0);
-    out << quint16(block.size() - sizeof(quint16));
-    m_tcpSocket->write(block);
+
 }
 
 
@@ -1089,13 +1105,12 @@ void IMMainCtrl::readMessage()
         return;
 
     QByteArray result= m_tcpSocket->readAll();
-    m_tcpSocket->flush();
     qDebug() << "get result : " << QString(result);
     QJsonParseError json_error;
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
-    if(json_error.error == QJsonParseError::NoError)
+    if(json_error.error != QJsonParseError::NoError)
     {
-        qDebug() << "解析失败!!!!!!!!!!!!!!!!!!";
+        qDebug() << "Prase error";
     }
 
     m_json = document.object();
@@ -1263,10 +1278,9 @@ void IMMainCtrl::readMessage()
         emit deleteFriendSuccess(m_id, m_peerID, m_groupName);
         break;
     }
-    case ADD_FRIEND:
+    case ADDFRIEND:
     {
-        //    in >> m_message >> m_friInf;
-        emit getFriendRequest(m_message, m_friInf);
+        HandleAddFriendFromNew();
         break;
     }
     case ADD_FLOCK:
@@ -1769,7 +1783,9 @@ void IMMainCtrl::closeWindow()
     }
 }
 
-
+/**
+ * 获取好友列表信息成功后，对得到的数据进行解析，并发送 getFriendsSuccess 信号，更新视图
+*/
 void IMMainCtrl::HandleGetAllFriendsSuccess(const QByteArray& result, bool ignoreFirstPack)
 {
     if(ignoreFirstPack)
@@ -1801,12 +1817,13 @@ void IMMainCtrl::HandleGetAllFriendsSuccess(const QByteArray& result, bool ignor
         for (auto it : jsonArray) {
             QJsonObject jsonbObj = it.toObject();
             FriendInformation temp;
-            temp.m_status = jsonbObj.value("status").toInt();
+            temp.m_status = jsonbObj.value("status").toString().toInt();
             temp.m_userID = jsonbObj.value("friendID").toString();
             temp.m_nickname = jsonbObj.value("nickname").toString();
             temp.m_remarkName = jsonbObj.value("remarkName").toString();
             temp.m_groupName = jsonbObj.value("groupName").toString();
-            temp.m_headPortrait = jsonbObj.value("head").toInt();
+            temp.m_headPortrait = jsonbObj.value("head").toString().toInt();
+            qDebug() << temp.m_userID << " " << temp.m_status << " " << temp.m_groupName;
             m_friendsVec.push_back(temp);
         }
         qDebug() << "freind size:" << m_friendsVec.size();
@@ -1816,7 +1833,18 @@ void IMMainCtrl::HandleGetAllFriendsSuccess(const QByteArray& result, bool ignor
     else {
         qDebug() << "Handle GetAllFriends failed!";
     }
-
-//    emit getFriendsSuccess(m_friendsVec);
 }
 
+void IMMainCtrl::HandleAddFriendFromNew()
+{
+    m_message.m_type = m_json.value("subType").toString().toInt();
+    qDebug() << __FILE__ << " " << __LINE__ << " HandleAddFriend TYPE: " << m_message.m_type;
+    m_message.m_text = m_json.value("verifyInfo").toString();
+    m_message.m_senderID = m_json.value("senderID").toString();
+    m_message.m_receiverID = m_json.value("receiverID").toString();
+
+    m_friInf.m_nickname = m_json.value("nickname").toString();
+
+    emit getFriendRequest(m_message, m_friInf);
+
+}

@@ -26,7 +26,7 @@ Description:  设置button显示信息
 *************************************************/
 void IMLinkFriendButton::setButtonStatus()
 {
-    QString str = QString("resource/image/head/%1.bmp").
+    QString str = QString(":/imageSrc/head/%1.bmp").
         arg(QString::number(m_info.m_headPortrait));
     QString text, mark;
 

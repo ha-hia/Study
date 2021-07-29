@@ -281,9 +281,10 @@ private:
     QJsonObject m_json;
     /// 大数据传输时，忽略第一次接收到的包长度信息的Json信息提取
     bool m_ignoreFirstPack;
-    /// 获取好友信息成功时接收好友信息
+    /// 获取好友列表信息成功后，对得到的数据进行解析，并发送 getFriendsSuccess 信号，更新视图
     void HandleGetAllFriendsSuccess(const QByteArray& result, bool ignoreFirstPack = true);
 
+    void HandleAddFriendFromNew();
 };
 
 #endif // IMMAINCTRL_H

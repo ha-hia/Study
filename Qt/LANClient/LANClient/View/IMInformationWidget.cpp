@@ -79,7 +79,7 @@ void IMInformationWidget::setUserInfor(const UserInfor &user)
     m_headNum = m_userInf.m_headPortrait;
     QString labelStr = QString("头像: %1 / %2").arg(QString::number(m_headNum)).
         arg(QString::number(MAX_NUM));
-    QString str = QString("QFrame#avatar{border-image:url(resource/image/head/%1.bmp)}")
+    QString str = QString("QFrame#avatar{border-image:url(:/imageSrc/head/%1.bmp)}")
         .arg(QString::number(m_headNum));
     m_frameHead->setStyleSheet(str);
     if (m_isEdit)
@@ -138,7 +138,7 @@ void IMInformationWidget::onClickPretButton()
         m_headNum = MAX_NUM;
     QString labelStr = QString("头像: %1 / %2").arg(QString::number(m_headNum)).
         arg(QString::number(MAX_NUM));
-    QString str = QString("QFrame#avatar{border-image:url(resource/image/head/%1.bmp)}")
+    QString str = QString("QFrame#avatar{border-image:url(:/imageSrc/head/%1.bmp)}")
         .arg(QString::number(m_headNum));
     m_frameHead->setStyleSheet(str);
     m_labelHead->setText(labelStr);
@@ -151,7 +151,7 @@ void IMInformationWidget::onClickNextButton()
         m_headNum = 1;
     QString labelStr = QString("头像: %1 / %2").arg(QString::number(m_headNum)).
         arg(QString::number(MAX_NUM));
-    QString str = QString("QFrame#avatar{border-image:url(resource/image/head/%1.bmp)}")
+    QString str = QString("QFrame#avatar{border-image:url(:/imageSrc/head/%1.bmp)}")
         .arg(QString::number(m_headNum));
     m_frameHead->setStyleSheet(str);
     m_labelHead->setText(labelStr);
@@ -232,13 +232,13 @@ void IMInformationWidget::initLoginWidget()
 
     m_frameHead->setFixedSize(40,40);
 //    m_frameHead->setObjectName("headFrame");
-//    QString str = QString("QFrame#headFrame{border-image:url(resource/image/head/%1.bmp);}")
+//    QString str = QString("QFrame#headFrame{border-image:url(:/imageSrc/head/%1.bmp);}")
 //            .arg(QString::number(m_myself.m_headPortrait));
 //    m_frameHead->setStyleSheet(str);
 
     m_headNum = 1;
     m_frameHead->setObjectName("avatar");
-    QString str = QString("QFrame#avatar{border-image:url(resource/image/head/1.bmp);}");
+    QString str = QString("QFrame#avatar{border-image:url(:/imageSrc/head/1.bmp);}");
     m_frameHead->setStyleSheet(str);
     m_labelHead->setText("头像: 1 / 133");
 }
