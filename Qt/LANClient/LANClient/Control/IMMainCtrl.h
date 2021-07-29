@@ -283,8 +283,8 @@ private:
     bool m_ignoreFirstPack;
     /// 获取好友列表信息成功后，对得到的数据进行解析，并发送 getFriendsSuccess 信号，更新视图
     void HandleGetAllFriendsSuccess(const QByteArray& result, bool ignoreFirstPack = true);
-
-    void HandleAddFriendFromNew();
+    /// 添加好友：处理接收到的信息
+    void AnalyseAddFriendRequest();
 };
 
 #endif // IMMAINCTRL_H

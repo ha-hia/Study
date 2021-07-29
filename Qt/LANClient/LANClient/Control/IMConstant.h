@@ -147,7 +147,7 @@ enum MessageType
     PLAYMUSIC,              /// 播放音乐
     GET_ALL_FRIENDS,        /// 获取所有好友信息
     ADDFRIEND,              /// 添加好友
-    ADDFRIEND_REQUEST,      /// 添加好友的subtype
+    ADDFRIEND_REQUEST,      /// 添加好友的subtype 添加请求
     ADDFRIEND_REPLY,        /// 添加好友的subtype
     TALK,                   /// 发送对话
     TALK_MESSAGE,           /// 聊天请求subtype：好友间发送信息
@@ -195,6 +195,7 @@ enum MessageType
     ADDFRIEND_AGREE,		   /// 同意加好友
     ADDFRIEND_REFUSE,		   /// 拒绝加好友
     ADDFRIEND_NOUSER,          /// 用户不存在
+    ADDFRIEND_FAILED,          /// 其他原因导致添加好友失败
 
     REMOVE_BOX,               // 删除分组
     REMOVE_BOX_SUCCESS,

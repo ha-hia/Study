@@ -257,7 +257,24 @@ void IMMainCtrl::addFriend(const TalkMessage & mes)//const TempStrings & temp)
     if (nullptr == m_tcpSocket)
         return;
     if (m_tcpSocket->isConnected())
-        requestAddFriend(mes);
+    {
+//        requestAddFriend(mes);
+        QJsonObject json;
+        json.insert("type",ADDFRIEND);
+        json.insert("subType",mes.m_type);//ADDFRIEND_REQUEST
+        json.insert("senderID", mes.m_senderID);
+        json.insert("receiverID", mes.m_receiverID);
+        /// 验证消息
+        json.insert("verifyInfo", mes.m_text);
+
+        QJsonDocument document;
+        document.setObject(json);
+        QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+
+        m_tcpSocket->write(byte_array);
+        qDebug() << "request AddFriend  send: " << QString(byte_array);
+    }
+
 }
 
 /*************************************************
@@ -408,13 +425,9 @@ void IMMainCtrl::resultOfFriendRequest(const TalkMessage & mes)
         return;
     if (m_tcpSocket->isConnected())
     {
-        if (nullptr == m_tcpSocket)
-            return;
-
         QJsonObject json;
         json.insert("type",ADDFRIEND);
-        json.insert("subType",ADDFRIEND_REPLY);
-        json.insert("reply",mes.m_type);// ADDFRIEND_AGREE,ADDFRIEND_REFUSE..
+        json.insert("subType",mes.m_type);// ADDFRIEND_AGREE,ADDFRIEND_REFUSE..
         json.insert("senderID", mes.m_senderID);
         json.insert("receiverID", mes.m_receiverID);
 
@@ -424,7 +437,7 @@ void IMMainCtrl::resultOfFriendRequest(const TalkMessage & mes)
 
         m_tcpSocket->write(byte_array);
         qDebug() << __FILE__ << " " << __LINE__ ;
-        qDebug() << "result Of FriendRequest " << byte_array;
+        qDebug() << "result Of FriendRequest send: " << QString(byte_array);
     }
 }
 
@@ -710,23 +723,7 @@ Description: 发送添加好友的请求
 *************************************************/
 void IMMainCtrl::requestAddFriend(const TalkMessage & mes)
 {
-    if (nullptr == m_tcpSocket)
-        return;
-
-    QJsonObject json;
-    json.insert("type",ADDFRIEND);
-    json.insert("subType",mes.m_type);//ADDFRIEND_REQUEST
-    json.insert("senderID", mes.m_senderID);
-    json.insert("receiverID", mes.m_receiverID);
-    /// 验证消息
-    json.insert("verifyInfo", mes.m_text);
-
-    QJsonDocument document;
-    document.setObject(json);
-    QByteArray byte_array = document.toJson(QJsonDocument::Compact);
-
-    m_tcpSocket->write(byte_array);
-    qDebug() << "request AddFriend  send: " << QString(byte_array);
+    /*260*/
 }
 
 /*************************************************
@@ -1105,7 +1102,7 @@ void IMMainCtrl::readMessage()
         return;
 
     QByteArray result= m_tcpSocket->readAll();
-    qDebug() << "get result : " << QString(result);
+    qDebug() << __FILE__ << " " << __LINE__ << " get result : " << QString(result);
     QJsonParseError json_error;
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
     if(json_error.error != QJsonParseError::NoError)
@@ -1280,7 +1277,7 @@ void IMMainCtrl::readMessage()
     }
     case ADDFRIEND:
     {
-        HandleAddFriendFromNew();
+        AnalyseAddFriendRequest();
         break;
     }
     case ADD_FLOCK:
@@ -1835,16 +1832,26 @@ void IMMainCtrl::HandleGetAllFriendsSuccess(const QByteArray& result, bool ignor
     }
 }
 
-void IMMainCtrl::HandleAddFriendFromNew()
+void IMMainCtrl::AnalyseAddFriendRequest()
 {
+//    ADDFRIEND_REQUEST          /// 添加请求
+//    ADDFRIEND_AGREE,		   /// 同意加好友
+//    ADDFRIEND_REFUSE,		   /// 拒绝加好友
+//    ADDFRIEND_NOUSER,          /// 用户不存在
     m_message.m_type = m_json.value("subType").toString().toInt();
     qDebug() << __FILE__ << " " << __LINE__ << " HandleAddFriend TYPE: " << m_message.m_type;
+
+    /// ADDFRIEND_REQUEST 会用到
     m_message.m_text = m_json.value("verifyInfo").toString();
     m_message.m_senderID = m_json.value("senderID").toString();
     m_message.m_receiverID = m_json.value("receiverID").toString();
-
     m_friInf.m_nickname = m_json.value("nickname").toString();
 
+    /// 关于信息，则都可能用到
+    m_friInf.m_headPortrait = m_json.value("head").toString().toInt();
+    m_friInf.m_status = m_json.value("status").toString().toInt();
+    m_friInf.m_userID = m_json.value("userID").toString();
+    m_friInf.m_gender = m_json.value("gender").toString();
     emit getFriendRequest(m_message, m_friInf);
 
 }

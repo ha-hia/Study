@@ -2419,58 +2419,78 @@ void IMMainWidget::receiveFriendRequest(const TalkMessage & mes,
                                         const UserInfor & friendInf)
 {
     if (0 != mes.m_receiverID.compare(m_myself.m_userID))
+    {
+        qDebug() << __FILE__ << __LINE__ << " m_myself.m_userID is NOT ME !!!";
         return;
+    }
+
     TalkMessage returnMes;
 
     switch (mes.m_type)
     {
-    case REQUEST_FRIEND:
-    {
-        QMessageBox::StandardButton rb = QMessageBox::question(
-                    nullptr, tr("好友请求"),
-                    QString(tr("是否同意用户%1 %2添加你为好友?\n验证消息:\n%3")).
-                    arg(mes.m_senderID, friendInf.m_nickname, mes.m_text),
-                    QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        if(rb == QMessageBox::Yes)
+        case ADDFRIEND_REQUEST:
         {
-            returnMes.m_type = ADDFRIEND_AGREE;
+            QMessageBox::StandardButton rb = QMessageBox::question(
+                        nullptr, tr("好友请求"),
+                        QString(tr("是否同意用户%1 %2添加你为好友?\n验证消息:\n%3")).
+                        arg(mes.m_senderID, friendInf.m_nickname, mes.m_text),
+                        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            if(rb == QMessageBox::Yes)
+            {
+                returnMes.m_type = ADDFRIEND_AGREE;
+            }
+            else
+            {
+                returnMes.m_type = ADDFRIEND_REFUSE;
+            }
+            returnMes.m_senderID = mes.m_receiverID;
+            returnMes.m_receiverID = mes.m_senderID;
+            if (nullptr != m_mainCtrl)
+                m_mainCtrl->resultOfFriendRequest(returnMes);
+            break;
         }
-        else
+        case ADDFRIEND_AGREE:
         {
-            returnMes.m_type = ADDFRIEND_REFUSE;
+            FriendInformation fri;
+            fri.m_headPortrait = friendInf.m_headPortrait;
+            fri.m_userID = friendInf.m_userID;
+            fri.m_nickname = friendInf.m_nickname;
+            fri.m_status = friendInf.m_status;
+            if (!addFriendButton(fri))
+                return;
+            QString temp = QString(tr("成功添加好友%1 %2.")).
+                    arg(friendInf.m_userID, friendInf.m_nickname);
+            QMessageBox::information(nullptr, tr("消息"), temp);
+            break;
         }
-        returnMes.m_senderID = mes.m_receiverID;
-        returnMes.m_receiverID = mes.m_senderID;
-        if (nullptr != m_mainCtrl)
-            m_mainCtrl->resultOfFriendRequest(returnMes);
-        break;
-    }
-    case AGREE_FRIEND:
-    {
-        FriendInformation fri;
-        fri.m_headPortrait = friendInf.m_headPortrait;
-        fri.m_userID = friendInf.m_userID;
-        fri.m_nickname = friendInf.m_nickname;
-//        fri.m_groupName = tr("New Friends");
-        fri.m_status = friendInf.m_status;
-        if (!addFriendButton(fri))
-            return;
-        QString temp = QString(tr("成功添加好友%1(%2).")).
-                arg(friendInf.m_userID, friendInf.m_nickname);
-        QMessageBox::information(nullptr, tr("消息"), temp);
-        break;
-    }
-    case REFUSE_FRIEND:
-    {
-        QString temp = QString(tr("用户%1(%2)\n拒绝您的好友添加请求.")).
-                arg(friendInf.m_userID, friendInf.m_nickname);
-        QMessageBox::information(nullptr, tr("消息"), temp);
-        break;
-    }
-    case DELETE_FRIEND:
-    {
-        break;
-    }
+        case ADDFRIEND_REFUSE:
+        {
+            QString temp = QString(tr("用户%1 %2\n拒绝您的好友添加请求.")).
+                    arg(friendInf.m_userID, friendInf.m_nickname);
+            QMessageBox::information(nullptr, tr("消息"), temp);
+            break;
+        }
+        case DELETE_FRIEND:
+        {
+            break;
+        }
+        case ADDFRIEND_NOUSER:
+        {
+            QString temp = QString(tr("用户%1 不存在!")).arg(mes.m_senderID);
+            QMessageBox::information(nullptr, tr("消息"), temp);
+            break;
+        }
+        case ADDFRIEND_FAILED:
+        {
+            QString temp = QString(tr("添加用户%1 失败!")).arg(mes.m_senderID);
+            QMessageBox::information(nullptr, tr("消息"), temp);
+            break;
+        }
+        default:
+        {
+            qDebug() << __FILE__ << __LINE__ << " NOT ACHEIVE!!!";
+            break;
+        }
     }
 }
 
