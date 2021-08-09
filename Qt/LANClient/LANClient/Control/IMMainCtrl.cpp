@@ -4,26 +4,100 @@
 #include "View/loginwidget.h"
 #include <QMessageBox>
 #include <QAbstractSocket>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonParseError>
 
 
 
 // mark: public -----------------------------------------------------
-IMMainCtrl::IMMainCtrl(const QString myID, QObject *parent) : QObject(parent), m_myID(myID)
+//IMMainCtrl::IMMainCtrl(const QString myID, QObject *parent) : QObject(parent), m_myID(myID)
+IMMainCtrl::IMMainCtrl(QObject *parent) : QObject(parent)
 {
+    m_tcpSocket = new IMTcpSocket(this);
+//    m_tcpSocket->abort();
+//    m_tcpSocket->ConnectToHost();
+
     m_recvSize = 0;
     m_packSize = 0;
     m_type = -999;
     m_ignoreFirstPack = true;
-    m_tcpSocket = new IMTcpSocket(this);
 
-    connect(m_tcpSocket, &IMTcpSocket::connected, this, &IMMainCtrl::requestGetFriendsInformation);
+//    connect(m_tcpSocket, &IMTcpSocket::connected, this, &IMMainCtrl::requestGetFriendsInformation);
     connect(m_tcpSocket, &IMTcpSocket::readyRead, this, &IMMainCtrl::readMessage);
     connect(m_tcpSocket, &IMTcpSocket::disconnected, this, &IMMainCtrl::closeWindow);
+
+    void(QAbstractSocket::*ptr)(QAbstractSocket::SocketError) = &QAbstractSocket::error;
+    connect(m_tcpSocket, ptr, this, &IMMainCtrl::ReturnSocketError);
 }
 
+//IMMainCtrl::IMMainCtrl(const IMMainCtrl& in)
+//{
+//    qDebug() <<　__FILE__ << " " <<__LINE__ << " copy IMMainCtrl";
+//}
+
+//IMMainCtrl& IMMainCtrl::operator=(const IMMainCtrl& in)
+//{
+//    qDebug() <<　__FILE__ << " " <<__LINE__ << " = IMMainCtrl";
+//}
+
+//IMMainCtrl::IMMainCtrl(IMMainCtrl &&in)
+//{
+//    this->m_tcpSocket = in.m_tcpSocket;
+//    in.m_tcpSocket = nullptr;
+//}
+
+void IMMainCtrl::setID(const QString& myID)
+{
+    m_myID = myID;
+}
+
+
+bool IMMainCtrl::Connect(int msec)
+{
+    return m_tcpSocket->ConnectToHost(msec);
+}
 void IMMainCtrl::closeConnect()
 {
     m_tcpSocket->close();
+}
+
+void IMMainCtrl::ReturnSocketError(QAbstractSocket::SocketError error)
+{
+    qDebug() << __FILE__ << " " << __LINE__ ;
+    QString strError = "neterror";
+    strError += m_tcpSocket->errorString();
+    qDebug() << strError;
+    emit getLoginMessgae(strError,false);
+
+}
+
+bool IMMainCtrl::loginRequest(QString &id ,const QString & pwd, const int status)
+{
+    if(m_tcpSocket->isConnected() == false)
+    {
+        qDebug() << __FILE__ << " " << __LINE__ << " net not work!";
+        emit getLoginMessgae(tr("网络连接失败,请检查网络!"),false);
+        return false;
+    }
+
+    m_myID = id;
+    m_loginInfo.m_userID = id;
+    m_loginInfo.m_password = pwd;
+    m_loginInfo.m_status = status;
+
+    QJsonObject json;
+    json.insert("type",LOGIN);
+    json.insert("userID", m_loginInfo.m_userID);
+    json.insert("password", m_loginInfo.m_password);
+    json.insert("status", ONLINE);
+
+    QJsonDocument document;
+    document.setObject(json);
+    QByteArray byte_array = document.toJson(QJsonDocument::Compact);
+
+    m_tcpSocket->write(byte_array);
+    return true;
 }
 
 /*************************************************
@@ -42,6 +116,7 @@ void IMMainCtrl::getFriendsInformation(const QString &id, const int status)
     }
     else
     {
+        qDebug() << __FILE__ << " " << __LINE__ << " net not work!";
         m_tcpSocket->ConnectToHost();
     }
 }
@@ -1098,8 +1173,10 @@ Description: 读取信息
 *************************************************/
 void IMMainCtrl::readMessage()
 {
+    qDebug() << __FILE__ << " " << __LINE__;
     if (nullptr == m_tcpSocket)
         return;
+    qDebug() << __FILE__ << " " << __LINE__;
 
     QByteArray result= m_tcpSocket->readAll();
     qDebug() << __FILE__ << " " << __LINE__ << " get result : " << QString(result);
@@ -1107,7 +1184,9 @@ void IMMainCtrl::readMessage()
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);
     if(json_error.error != QJsonParseError::NoError)
     {
-        qDebug() << "Prase error";
+        qDebug() << __FILE__ << "," << __LINE__ << " Data Prase error";
+//        emit getLoginMessgae(tr("数据错误."),false); 暂时
+        return;
     }
 
     m_json = document.object();
@@ -1121,6 +1200,22 @@ void IMMainCtrl::readMessage()
     }
     switch (m_type)
     {
+    case LOGIN_SUCCESS:
+        m_myInf.m_regDateTime = m_json.value("registerDate").toString();
+        m_myInf.m_nickname = m_json.value("nickname").toString();
+        m_myInf.m_gender = m_json.value("gender").toString();
+        m_myInf.m_headPortrait = m_json.value("head").toString().toInt();
+        m_myInf.m_userID = m_loginInfo.m_userID;
+        m_myInf.m_password = m_loginInfo.m_password;
+        m_myInf.m_status = m_loginInfo. m_status;
+        emit getLoginMessgae(tr("登录成功"), true, &m_myInf);
+        break;
+    case LOGIN_FAILED:
+        emit getLoginMessgae(tr("登录失败.帐号或者密码错误."),false);
+        break;
+    case HAVE_LOGINED:
+        emit getLoginMessgae(tr("登录失败.该用户已经登录."),false);
+        break;
     case NO_FRIEND:
     {
         requestGetFlocksInformation(m_myID);
@@ -1772,11 +1867,15 @@ void IMMainCtrl::closeWindow()
 {
     if (m_tcpSocket->isConnected() == false)
     {
-        QMessageBox::information(nullptr, tr("系统提示"),
-                              tr("您的客户端已经与服务器断开连接，请重新登录。"));
+        qDebug() << __FILE__ << " " << __LINE__ << " FALSE";
+//        QMessageBox::information(nullptr, tr("系统提示"),
+//                              tr("您的客户端已经与服务器断开连接，请重新登录。"));
         emit closeWindowSignal();
-        LoginWidget *loginWidget = new LoginWidget;
-        loginWidget->show();
+//        LoginWidget *loginWidget = new LoginWidget;  //屏蔽引起的冲突
+//        loginWidget->show();
+    }
+    else {
+        qDebug() << __FILE__ << " " << __LINE__ << "  closeWindow BUT true";
     }
 }
 

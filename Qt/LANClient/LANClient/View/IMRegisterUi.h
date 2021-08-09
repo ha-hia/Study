@@ -28,6 +28,7 @@ public:
     explicit IMRegisterUi(QWidget *parent = nullptr);
     ~IMRegisterUi();
 
+    IMRegisterCtrl* getRegisterCtrl();
     /**
      * @brief 初始化注册界面
      */
@@ -47,7 +48,7 @@ private:
     /**
      * @brief 注册错误/成功时，显示注册界面
      */
-//    void RegisterFailed();
+    void RegisterFailed();
     void ShowReturnInfo(QString& res);
 
 private:

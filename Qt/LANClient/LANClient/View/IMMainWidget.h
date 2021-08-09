@@ -59,11 +59,19 @@ class IMMainWidget : public QWidget
     Q_OBJECT
 public:
     IMMainWidget( const UserInfor& me, QWidget *parent = nullptr);
+    IMMainWidget( QWidget *parent = nullptr);
     ~IMMainWidget();
 
+
+    /// 设置本地个人信息
+    void setLocalMyInformation(UserInfor& userInfo);
     IMMainCtrl * getMainCtrl() const
     {
         return m_mainCtrl;
+    }
+    void setMainCtrl(IMMainCtrl* in)
+    {
+        m_mainCtrl = in;
     }
 
     UserInfor getLocalMyInformation() const;
@@ -290,7 +298,8 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void timerEvent(QTimerEvent *);
 
-private slots:
+//private slots:
+public:
 
     // 关闭主窗口
     void closeWindow();

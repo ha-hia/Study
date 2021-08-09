@@ -1,8 +1,10 @@
 #ifndef LOGINWIDGET_H
 #define LOGINWIDGET_H
 
+#include "IMMainWidget.h"
+#include "Control/IMMainCtrl.h"
 #include "Control/IMConstant.h"
-#include "Control/IMLoginCtrl.h"
+//#include "Control/IMLoginCtrl.h"
 #include "View/IMRegisterUi.h"
 #include "CustomLabel.h"
 #include <QWidget>
@@ -29,7 +31,7 @@ public slots:
     void ClickLogin(bool pram);
     void ClickClose();
     void ClickRegister();
-    void HandleLogin(const QString & strRet, bool isLogin = false, const UserInfor* loginInfo = nullptr);
+    void HandleLogin(const QString & strRet, bool isLogin = false, UserInfor * me = nullptr);
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -40,6 +42,8 @@ protected:
     void setServer(const QString &ip = "120.79.139.92", const quint16 port = 6666);
 
 private:
+    IMMainWidget* m_mainWidget;
+    IMMainCtrl* m_mainctl;
     QWidget* toolWidget;
     QPushButton* m_setBtn;
     CustomLabel* m_closeLab;
@@ -59,7 +63,7 @@ private:
 
     bool isLogin;
     IMRegisterUi* registerUi;   /// 注册界面
-    IMLoginCtrl* m_loginCtrl;   /// 用于控制登录
+//    IMLoginCtrl* m_loginCtrl;   /// 用于控制登录
 };
 
 #endif // LOGINWIDGET_H

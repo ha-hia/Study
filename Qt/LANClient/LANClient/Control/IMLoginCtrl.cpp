@@ -179,6 +179,7 @@ Changes： nullptr
 *************************************************/
 void IMLoginCtrl::readMessage()
 {
+    qDebug() << __FILE__ << " " << __LINE__;
     QByteArray result= m_tcpSocket->readAll();
     QJsonParseError json_error;
     QJsonDocument document = QJsonDocument::fromJson(result, &json_error);

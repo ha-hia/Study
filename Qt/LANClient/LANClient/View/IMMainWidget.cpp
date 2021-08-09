@@ -29,6 +29,7 @@ Changes：
 #include <QTime>
 #include <QTimerEvent>
 
+#include "View/loginwidget.h"
 #include "IMFriendListWidget.h"
 //#include "IMFlockListWidget.h"
 //#include "IMDiscussionListWidget.h"
@@ -144,6 +145,11 @@ IMMainWidget::~IMMainWidget()
 
 //    qDeleteAll(m_discussionInformationMap.begin(), m_discussionInformationMap.end());
 //    m_discussionInformationMap.clear();
+}
+
+void IMMainWidget::setLocalMyInformation(UserInfor& userInfo)
+{
+    m_myself = userInfo;
 }
 
 /*************************************************
@@ -2248,7 +2254,11 @@ void IMMainWidget::closeWindow()
     m_flag = 1;
     closeAllWindows();
     m_mainCtrl->closeConnect();
-    close();
+    this->close();
+    //////// 显示登录界面
+    LoginWidget *loginWidget = new LoginWidget;
+    loginWidget->show();
+
 }
 
 /*************************************************
@@ -2737,7 +2747,8 @@ Description: 初始化
 *************************************************/
 void IMMainWidget::initIMMainWidget()
 {
-    m_mainCtrl = new IMMainCtrl(m_myself.m_userID);
+//    m_mainCtrl = new IMMainCtrl(m_myself.m_userID); //修改
+    m_mainCtrl = nullptr;
 
     m_labelHead = new CustomLabel(this);
 

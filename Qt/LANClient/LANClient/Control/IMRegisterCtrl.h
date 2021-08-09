@@ -20,7 +20,7 @@ public:
 
     void RegisterID(UserInfor& input);
 signals:
-    void sigRegisterFailed();
+    void sigRegisterFailed(bool);
     void sigGetRegiterRet(QString& res);
 private:
     void RegisterRequest();

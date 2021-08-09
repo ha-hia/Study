@@ -16,6 +16,7 @@ Changes：
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonArray>
+#include <QAbstractSocket>
 
 
 class IMTcpSocket;
@@ -25,9 +26,20 @@ class IMMainCtrl : public QObject
     Q_OBJECT
 public:
     IMMainCtrl(const QString myID, QObject *parent = nullptr);
+    IMMainCtrl(QObject *parent = nullptr);
+//    IMMainCtrl(const IMMainCtrl& in);
+//    IMMainCtrl(IMMainCtrl &&in);
+//    IMMainCtrl& operator=(const IMMainCtrl& in);
     
+    /// 建立连接，超时时间 msec
+    bool Connect(int msec = -1);
     // 关闭链接
     void closeConnect();
+
+    /// 登陆请求
+    void setID(const QString& myID);
+    bool loginRequest(QString &id ,const QString & pwd = "", const int status = ONLINE);
+    void ReturnSocketError(QAbstractSocket::SocketError error);
 
     // 获取所有好友列表信息
     void getFriendsInformation(const QString &, const int);
@@ -102,6 +114,7 @@ public:
     /**************** network ****************/
 
 signals:
+    void getLoginMessgae(const QString & strRet, bool isLogin = false, UserInfor * me = nullptr);
     void getFriendsSuccess(const QVector<FriendInformation> &);
     void getFlocksSuccess(const QVector<FlockInformation> &);
     void getDiscussionsSuccess(const QVector<DiscussionInformation> &);
@@ -225,7 +238,10 @@ public slots:
     // 关闭程序
     void closeWindow();
 
-
+    IMTcpSocket* getSocket()
+    {
+        return  m_tcpSocket;
+    }
 private:
     QString m_myID;
 
@@ -278,6 +294,7 @@ private:
 
 
     /*******************************/
+    LoginInformation m_loginInfo;
     QJsonObject m_json;
     /// 大数据传输时，忽略第一次接收到的包长度信息的Json信息提取
     bool m_ignoreFirstPack;
