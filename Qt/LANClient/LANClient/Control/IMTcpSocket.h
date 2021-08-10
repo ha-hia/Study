@@ -18,7 +18,7 @@ public:
     static QHostAddress m_hostAddress;
     static uint16_t m_hostPort;
 
-    bool ConnectToHost(int msecs = -1);
+    void ConnectToHost();
     void LinkSuccess();
     void Disconnect();
     bool isConnected();
@@ -37,8 +37,7 @@ private:
     void LinkSlotAndSignal(void);
 
 signals:
-    void sigWaitForConnected(const QString& info, int number = 0);
-    void showConnectionStatus(const QString&);
+
 public slots:
 };
 

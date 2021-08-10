@@ -36,7 +36,7 @@ public:
     void AbortConnect();
 
 signals:
-    void getLoginMessgae(const QString &, bool isLogin = false, UserInfor * me = nullptr);
+    void getLoginMessgae(const QString &, bool isLogin = false, const UserInfor * me = nullptr);
     void getQuestionAndAnswerSuccess(const TempStrings & tmpStr);
 
 public slots:

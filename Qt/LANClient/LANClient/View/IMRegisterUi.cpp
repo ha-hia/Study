@@ -23,7 +23,7 @@ IMRegisterUi::IMRegisterUi(QWidget *parent) :
     Q_ASSERT(nullptr != registerCtrl);
 
     InitWidget();
-    connect( registerCtrl, &IMRegisterCtrl::sigRegisterFailed, this, &IMRegisterUi::RegisterFailed);
+//    connect( registerCtrl, &IMRegisterCtrl::sigRegisterFailed, this, &IMRegisterUi::RegisterFailed);
 
     connect( registerCtrl, &IMRegisterCtrl::sigGetRegiterRet, this, &IMRegisterUi::ShowReturnInfo);
 }
@@ -152,10 +152,10 @@ void IMRegisterUi::on_registerBtn_clicked()
 
 }
 
-void IMRegisterUi::RegisterFailed()
-{
-    registeringLabel->hide();
-}
+//void IMRegisterUi::RegisterFailed()
+//{
+//    this->close();
+//}
 
 void IMRegisterUi::ShowReturnInfo(QString& res)
 {
@@ -165,9 +165,4 @@ void IMRegisterUi::ShowReturnInfo(QString& res)
         return;
     }
     QMessageBox::about(this, tr("提示"), res);
-}
-
-IMRegisterCtrl* IMRegisterUi::getRegisterCtrl()
-{
-    return registerCtrl;
 }

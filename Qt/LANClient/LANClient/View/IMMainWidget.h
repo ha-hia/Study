@@ -59,21 +59,19 @@ class IMMainWidget : public QWidget
     Q_OBJECT
 public:
     IMMainWidget( const UserInfor& me, QWidget *parent = nullptr);
-    IMMainWidget( QWidget *parent = nullptr);
+    IMMainWidget(QWidget *parent = nullptr);
     ~IMMainWidget();
 
-
-    /// 设置本地个人信息
-    void setLocalMyInformation(UserInfor& userInfo);
     IMMainCtrl * getMainCtrl() const
     {
         return m_mainCtrl;
     }
-    void setMainCtrl(IMMainCtrl* in)
-    {
-        m_mainCtrl = in;
-    }
+    /// 登陆请求
+    void init();
+    bool loginRequest(QString &id ,const QString & pwd = "", const int status = ONLINE);
+    void sendLoginMessage(const QString & strRet, bool isLogin = false, UserInfor * me = nullptr);
 
+    void setLocalMyInformation(const UserInfor& in);
     UserInfor getLocalMyInformation() const;
 
     bool isMyFriend(const QString &id) const;
@@ -167,6 +165,7 @@ public:
     void getNetWorkHistoryMessage(const int index, const QDate &date);
 
 signals:
+    void getLoginMessgae(const QString & strRet, bool isLogin = false, UserInfor * me = nullptr);
     void exportHistoryMessageOneFriendSuccess(const QString &, const QString &,
                                               const QString &);
     void exportHistoryMessageAllSuccess(const QString &, const QString &);
@@ -298,8 +297,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void timerEvent(QTimerEvent *);
 
-//private slots:
-public:
+private slots:
 
     // 关闭主窗口
     void closeWindow();

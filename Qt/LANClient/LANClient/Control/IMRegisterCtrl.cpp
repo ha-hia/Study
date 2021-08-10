@@ -18,8 +18,8 @@ IMRegisterCtrl::IMRegisterCtrl(QObject *parent)
 
     /// 当连接出现错误，则再次显示注册界面
     void(QAbstractSocket::*ptr)(QAbstractSocket::SocketError) = &QAbstractSocket::error;
-    connect(this->registerSocket, ptr, this, &IMRegisterCtrl::RegisterFailed);
-//    connect(this->registerSocket, ptr, this, &IMRegisterCtrl::RegisterResult);
+//    connect(this->registerSocket, ptr, this, &IMRegisterCtrl::RegisterFailed);
+    connect(this->registerSocket, ptr, this, &IMRegisterCtrl::RegisterResult);
 
     /// 接收到回复消息
     connect(this->registerSocket, &IMTcpSocket::readyRead, this, &IMRegisterCtrl::RegisterResult);
@@ -65,13 +65,17 @@ void IMRegisterCtrl::RegisterRequest()
     document.setObject(json);
     QByteArray byte_array = document.toJson(QJsonDocument::Compact);
 
+    qDebug() << __FILE__ << " " << __LINE__;
     registerSocket->write(byte_array);
     qDebug() << "send: " << byte_array;
 }
 
+/**
+ * 对应21行,优化至95-99行
+ */
 void IMRegisterCtrl::RegisterFailed()
 {
-    emit sigRegisterFailed(false);
+    emit sigRegisterFailed();
 }
 
 void IMRegisterCtrl::RegisterResult()

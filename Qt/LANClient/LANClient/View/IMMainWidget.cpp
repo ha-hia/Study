@@ -29,7 +29,6 @@ Changes：
 #include <QTime>
 #include <QTimerEvent>
 
-#include "View/loginwidget.h"
 #include "IMFriendListWidget.h"
 //#include "IMFlockListWidget.h"
 //#include "IMDiscussionListWidget.h"
@@ -99,6 +98,31 @@ IMMainWidget::IMMainWidget(const UserInfor& me, QWidget *parent) :
     setWindowTitle(tr("Hi Chats"));
 }
 
+/// UserInfor 通过后续Set
+IMMainWidget::IMMainWidget(QWidget *parent) : QWidget(parent)
+{
+    //, m_database(me.m_userID) 暂时屏蔽并添加数据库的默认构造函数
+    setAttribute(Qt::WA_DeleteOnClose);
+    m_flag = 0;
+    m_timerId = 0;
+//    m_myself = me;
+    m_onlineCounter = 0;
+//    m_mailWidget = nullptr;
+    m_messageManWidget = nullptr;
+//    initIMMainWidget(); 后续主动调用init
+    m_mainCtrl = new IMMainCtrl(m_myself.m_userID);
+    connect(m_mainCtrl, &IMMainCtrl::getLoginMessgae, this, &IMMainWidget::sendLoginMessage);
+}
+
+void IMMainWidget::init()
+{
+    initIMMainWidget();
+    linkSignalWithSlot();
+    creatMenu();
+    setWindowTitle(tr("Hi Chats"));
+}
+
+
 IMMainWidget::~IMMainWidget()
 {
     // 关闭定时器
@@ -147,9 +171,21 @@ IMMainWidget::~IMMainWidget()
 //    m_discussionInformationMap.clear();
 }
 
-void IMMainWidget::setLocalMyInformation(UserInfor& userInfo)
+bool IMMainWidget::loginRequest(QString &id ,const QString & pwd, const int status)
 {
-    m_myself = userInfo;
+    if (nullptr != m_mainCtrl)
+        m_mainCtrl->loginRequest(id, pwd, status);
+}
+
+void IMMainWidget::sendLoginMessage(const QString & strRet, bool isLogin, UserInfor * me)
+{
+    emit getLoginMessgae(strRet, isLogin, me);
+}
+
+void IMMainWidget::setLocalMyInformation(const UserInfor& in)
+{
+    m_myself = in;
+    m_database.setDatabseStrID(m_myself.m_userID);
 }
 
 /*************************************************
@@ -2254,11 +2290,8 @@ void IMMainWidget::closeWindow()
     m_flag = 1;
     closeAllWindows();
     m_mainCtrl->closeConnect();
-    this->close();
-    //////// 显示登录界面
-    LoginWidget *loginWidget = new LoginWidget;
-    loginWidget->show();
-
+    close();
+//    deleteLater();
 }
 
 /*************************************************
@@ -2747,9 +2780,6 @@ Description: 初始化
 *************************************************/
 void IMMainWidget::initIMMainWidget()
 {
-//    m_mainCtrl = new IMMainCtrl(m_myself.m_userID); //修改
-    m_mainCtrl = nullptr;
-
     m_labelHead = new CustomLabel(this);
 
     qDebug() << "m_headPortrait: " << m_myself.m_headPortrait;

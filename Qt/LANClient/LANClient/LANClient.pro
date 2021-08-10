@@ -30,7 +30,7 @@ SOURCES += \
         Control\IMTcpSocket.cpp \
     View\IMRegisterUi.cpp \
     Control/IMRegisterCtrl.cpp \
-    #Control/IMLoginCtrl.cpp \
+    Control/IMLoginCtrl.cpp \
     View/IMMainWidget.cpp \
     Control/IMDatabaseCtrl.cpp \
     Control/IMMainCtrl.cpp \
@@ -64,7 +64,7 @@ HEADERS += \
     View\IMRegisterUi.h \
     Control/IMConstant.h \
     Control/IMRegisterCtrl.h \
-    #Control/IMLoginCtrl.h \
+    Control/IMLoginCtrl.h \
     View/IMMainWidget.h \
     Control/IMDatabaseCtrl.h \
     Control/IMMainCtrl.h \
@@ -97,7 +97,7 @@ RESOURCES += \
 FORMS += \
     View\IMRegisterUi.ui
 
-CONFIG += console
+#CONFIG += console
 
 #QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
 #QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO

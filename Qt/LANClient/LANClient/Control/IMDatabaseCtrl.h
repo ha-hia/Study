@@ -13,7 +13,10 @@ class IMDatabaseCtrl : public QObject
     Q_OBJECT
 public:
     IMDatabaseCtrl(const QString myID, QObject *parent = nullptr);
+    IMDatabaseCtrl(QObject *parent = nullptr);
     ~IMDatabaseCtrl();
+    /// 临时加入
+    void setDatabseStrID(const QString& myID);
     // 创建连接
     bool createConnection();
     // 关闭数据库

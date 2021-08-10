@@ -1,7 +1,7 @@
 
-#include "Control/IMMainCtrl.h"
 #include "loginwidget.h"
 #include "IMMainWidget.h"
+#include "Control/IMMainCtrl.h"
 #include "Control/IMTcpSocket.h"
 
 #include <QString>
@@ -20,8 +20,8 @@ LoginWidget::LoginWidget(QWidget *parent)
     connect(this->m_closeLab, &CustomLabel::clicked, this, &LoginWidget::ClickClose);
     connect(this->m_register, &CustomLabel::clicked, this, &LoginWidget::ClickRegister);
     connect(this->m_loginBtn, &QPushButton::toggled, this, &LoginWidget::ClickLogin);
-//    connect(m_loginCtrl, &IMLoginCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin);
-    connect(this->m_mainctl, &IMMainCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin);
+//    connect(m_loginCtrl, &IMLoginCtrl::getLoginMessgae, this, &LoginWidget::HandleLogin); 将登陆也放在MainWidget里
+    connect(m_mainWidget, &IMMainWidget::getLoginMessgae, this, &LoginWidget::HandleLogin);
 }
 
 LoginWidget::~LoginWidget()
@@ -34,9 +34,9 @@ void LoginWidget::init()
     setFixedSize(400,350);
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
 
-    m_mainWidget = nullptr;
-//    m_mainctl = nullptr;
-    m_mainctl = new IMMainCtrl;
+//    m_loginCtrl = new IMLoginCtrl(this);
+    m_mainWidget = new IMMainWidget;
+    m_mainWidget->hide();
     /***********************开始界面布局*****************************************/
     /***********************top*****************************************/
     m_closeLab = new CustomLabel;
@@ -147,7 +147,8 @@ void LoginWidget::RegisterUiChange(bool input)
     /// 取消登陆
     else
     {
-//        m_loginCtrl->AbortConnect();
+        /// 断开连接
+        m_mainWidget->getMainCtrl()->closeConnect();
         m_loginBtn->setText(tr("登陆"));
         m_setBtn->show();
         m_IDLine->show();
@@ -155,11 +156,6 @@ void LoginWidget::RegisterUiChange(bool input)
         m_register->show();
         m_forgetPwd->show();
         m_extendWidget->hide();
-//        if(nullptr != m_mainctl)
-//        {
-//            delete  m_mainctl;
-//            m_mainctl = nullptr;
-//        }
     }
 }
 
@@ -189,7 +185,6 @@ void LoginWidget::ClickRegister()
 void LoginWidget::ClickLogin(bool pram)
 {
     setServer();
-
     if(pram == true)
     {
         QString ID = m_IDLine->text();
@@ -200,26 +195,18 @@ void LoginWidget::ClickLogin(bool pram)
             return;
         }
         RegisterUiChange(true);
-        /// 向登录控制类传递登录数据，具体的请求在控制类里处理，待实现
+
+        m_mainWidget->loginRequest(ID, pwd);
+//        /// 向登录控制类传递登录数据，具体的请求在控制类里处理，待实现
 //        if (m_loginCtrl == nullptr)
 //        {
 //            m_loginCtrl = new IMLoginCtrl(this);
 //        }
 //        m_loginCtrl->login(ID, pwd);
 
-        m_mainctl->setID(ID);
-        if(m_mainctl->Connect(300) == true)
-        {
-            m_mainctl->loginRequest(ID, pwd);
-        }
-        else {
-            qDebug() << __FILE__ << " " << __LINE__ << " net not work!";
-        }
     }
     else
     {
-        /// 断开连接
-        //m_loginCtrl->AbortConnect();
         RegisterUiChange(false);
         isLogin = false;
     }
@@ -254,7 +241,7 @@ void LoginWidget::setServer(const QString &ip, const quint16 port)
     IMTcpSocket::m_hostPort = tempPort;
 }
 
-void LoginWidget::HandleLogin(const QString & strRet, bool isLogin, UserInfor* loginInfo)
+void LoginWidget::HandleLogin(const QString & strRet, bool isLogin, const UserInfor* loginInfo)
 {
     /// 成功登陆
     if (isLogin == true)
@@ -262,22 +249,15 @@ void LoginWidget::HandleLogin(const QString & strRet, bool isLogin, UserInfor* l
         /// 关闭登陆界面
         this->close();
 
-        if(nullptr == m_mainctl)
-        {
-            m_mainctl = new IMMainCtrl;
-            qDebug() << __FILE__ <<" " << __LINE__ << " another m_mainctl";
-        }
         /// 显示主界面
-        m_mainWidget = new IMMainWidget(*loginInfo);
-        m_mainWidget->setMainCtrl(this->m_mainctl);
-        connect(m_mainctl, &IMMainCtrl::closeWindowSignal, m_mainWidget, &IMMainWidget::closeWindow);
-        connect(m_mainctl->getSocket(), &IMTcpSocket::readyRead, m_mainctl, &IMMainCtrl::readMessage);
-        m_mainWidget->getFriendsInformation();
-        m_mainWidget->show();
-
 //        IMMainWidget *mainWidget = new IMMainWidget(*loginInfo);
 //        mainWidget->getFriendsInformation();
 //        mainWidget->show();
+
+        m_mainWidget->setLocalMyInformation(*loginInfo);
+        m_mainWidget->init();
+        m_mainWidget->getFriendsInformation();
+        m_mainWidget->show();
     }
     /// 避免反复提示
     else if( strRet.contains("neterror") )

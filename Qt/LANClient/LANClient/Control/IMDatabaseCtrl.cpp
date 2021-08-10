@@ -54,6 +54,18 @@ IMDatabaseCtrl::IMDatabaseCtrl(const QString myID, QObject *parent) :
     close();
 }
 
+IMDatabaseCtrl::IMDatabaseCtrl(QObject *parent) : QObject(parent)
+{
+//    m_myID(myID) 暂时屏蔽
+    m_localHistoryTableName = "HistoryMessage";
+    m_localHistoryTableName.append(m_myID);
+
+    m_db = new QSqlDatabase;
+    createConnection();
+    createTable();
+    close();
+}
+
 IMDatabaseCtrl::~IMDatabaseCtrl()
 {
     if (m_db != nullptr)
@@ -63,6 +75,11 @@ IMDatabaseCtrl::~IMDatabaseCtrl()
         delete m_db;
         m_db = nullptr;
     }
+}
+
+void IMDatabaseCtrl::setDatabseStrID(const QString& myID)
+{
+    m_myID = myID;
 }
 
 /*************************************************
